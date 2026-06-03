@@ -1,7 +1,15 @@
 export function skinUrlFromPayload(payload: Record<string, unknown>) {
   const directSkinUrl = payload.skinUrl;
   if (typeof directSkinUrl === "string" && isUsableSkinUrl(directSkinUrl)) {
-    return directSkinUrl.trim();
+    return normalizeSkinUrl(directSkinUrl);
+  }
+
+  const directTextureValue = payload.skinTextureValue;
+  if (typeof directTextureValue === "string") {
+    const url = skinUrlFromTextureValue(directTextureValue);
+    if (url) {
+      return url;
+    }
   }
 
   const skin = payload.skin;
@@ -9,7 +17,7 @@ export function skinUrlFromPayload(payload: Record<string, unknown>) {
     const nestedSkinUrl = (skin as { skinUrl?: unknown }).skinUrl;
     const textureValue = (skin as { textureValue?: unknown }).textureValue;
     if (typeof nestedSkinUrl === "string" && isUsableSkinUrl(nestedSkinUrl)) {
-      return nestedSkinUrl.trim();
+      return normalizeSkinUrl(nestedSkinUrl);
     }
     if (typeof textureValue === "string") {
       return skinUrlFromTextureValue(textureValue);
@@ -17,6 +25,19 @@ export function skinUrlFromPayload(payload: Record<string, unknown>) {
   }
 
   return null;
+}
+
+export function skinTextureValueFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "skinTextureValue") || stringFromNestedSkin(payload, "textureValue");
+}
+
+export function skinTextureSignatureFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "skinTextureSignature") || stringFromNestedSkin(payload, "signature");
+}
+
+export function skinProviderFromPayload(payload: Record<string, unknown>) {
+  const provider = stringFromPayload(payload, "skinProvider") || stringFromNestedSkin(payload, "provider");
+  return provider === "mojang" || provider === "elyby" || provider === "offline" || provider === "unknown" ? provider : undefined;
 }
 
 function isUsableSkinUrl(value: string) {
@@ -29,10 +50,31 @@ function skinUrlFromTextureValue(textureValue: string) {
     const decoded = Buffer.from(textureValue, "base64").toString("utf8");
     const parsed = JSON.parse(decoded) as { textures?: { SKIN?: { url?: unknown } } };
     const url = parsed.textures?.SKIN?.url;
-    return typeof url === "string" && isUsableSkinUrl(url) ? url.trim() : null;
+    return typeof url === "string" && isUsableSkinUrl(url) ? normalizeSkinUrl(url) : null;
   } catch {
     return null;
   }
+}
+
+function normalizeSkinUrl(value: string) {
+  return value.trim()
+    .replace(/^http:\/\/textures\.minecraft\.net\//, "https://textures.minecraft.net/")
+    .replace(/^http:\/\/ely\.by\//, "https://ely.by/");
+}
+
+function stringFromPayload(payload: Record<string, unknown>, key: string) {
+  const value = payload[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function stringFromNestedSkin(payload: Record<string, unknown>, key: string) {
+  const skin = payload.skin;
+  if (!skin || typeof skin !== "object") {
+    return null;
+  }
+
+  const value = (skin as Record<string, unknown>)[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 export function seasonFromPayload(payload: Record<string, unknown>) {

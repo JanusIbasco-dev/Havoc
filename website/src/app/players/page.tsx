@@ -33,7 +33,7 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
               className="glass-panel neon-hover rounded-3xl p-5"
             >
               <div className="flex items-center gap-4">
-                <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} size="md" />
+                <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="md" />
                 <div className="min-w-0">
                   <h2 className="truncate text-xl font-black text-white">{player.username}</h2>
                   <p className="text-sm text-purple-100/45">Rank #{ranks.get(player.uuid) || "N/A"}</p>

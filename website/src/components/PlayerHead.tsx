@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { getPlayerHeadUrl } from "@/lib/skin";
 
 type PlayerHeadProps = {
   username: string;
   uuid?: string;
   skinUrl?: string | null;
+  skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
   size?: "sm" | "md" | "lg";
 };
 
@@ -15,13 +17,11 @@ const sizes = {
   lg: "h-24 w-24"
 };
 
-export function PlayerHead({ username, uuid, skinUrl, size = "md" }: PlayerHeadProps) {
+export function PlayerHead({ username, uuid = "", skinUrl, skinProvider, size = "md" }: PlayerHeadProps) {
   const [failed, setFailed] = useState(false);
-  const identifier = encodeURIComponent(uuid || username);
-  const src = `https://mc-heads.net/avatar/${identifier}/100`;
-  const usableSkinUrl = typeof skinUrl === "string" && skinUrl.trim() ? skinUrl.trim() : null;
+  const source = getPlayerHeadUrl({ uuid, username, skinUrl, skinProvider });
 
-  if (usableSkinUrl && !failed) {
+  if (source.url && source.kind === "texture" && !failed) {
     return (
       <div
         role="img"
@@ -31,7 +31,7 @@ export function PlayerHead({ username, uuid, skinUrl, size = "md" }: PlayerHeadP
         <div
           className="relative h-full w-full bg-cover bg-no-repeat [image-rendering:pixelated]"
           style={{
-            backgroundImage: `url("${usableSkinUrl}")`,
+            backgroundImage: `url("${source.url}")`,
             backgroundSize: "800% 800%",
             backgroundPosition: "14.2857% 14.2857%"
           }}
@@ -39,21 +39,21 @@ export function PlayerHead({ username, uuid, skinUrl, size = "md" }: PlayerHeadP
           <div
             className="absolute inset-0 bg-cover bg-no-repeat [image-rendering:pixelated]"
             style={{
-              backgroundImage: `url("${usableSkinUrl}")`,
+              backgroundImage: `url("${source.url}")`,
               backgroundSize: "800% 800%",
               backgroundPosition: "71.4286% 14.2857%"
             }}
           />
         </div>
-        <img src={usableSkinUrl} alt="" className="hidden" onError={() => setFailed(true)} />
+        <img src={source.url} alt="" className="hidden" onError={() => setFailed(true)} />
       </div>
     );
   }
 
-  if (!failed) {
+  if (source.url && source.kind === "render" && !failed) {
     return (
       <img
-        src={src}
+        src={source.url}
         alt={`${username} head`}
         onError={() => setFailed(true)}
         className={`${sizes[size]} border border-purple-400/35 bg-black object-cover shadow-[0_0_28px_rgba(139,92,246,0.24)] [image-rendering:pixelated]`}

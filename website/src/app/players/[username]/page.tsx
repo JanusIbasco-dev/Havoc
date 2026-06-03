@@ -7,6 +7,7 @@ import { formatDate, formatHours } from "@/lib/format";
 import { getPlayerProfile } from "@/lib/players";
 import { getCurrentSeason } from "@/lib/season-data";
 import { resolveSeasonNumber } from "@/lib/seasons";
+import { getSkinProviderLabel } from "@/lib/skin";
 
 type PlayerProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -25,6 +26,7 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
   }
 
   const { player, rank, kdRatio, recentActivity } = profile;
+  const skinLabel = getSkinProviderLabel(player);
 
   return (
     <div className="relative min-h-screen overflow-hidden px-5 pb-12 pt-28">
@@ -39,10 +41,11 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
 
       <section className="grid gap-6 lg:grid-cols-[390px_1fr]">
         <aside className="glass-panel purple-glow overflow-hidden rounded-3xl border-purple-300/20 p-5 shadow-[0_0_60px_rgba(139,92,246,0.18)]">
-          <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} />
+          <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} />
+          {skinLabel ? <p className="mt-3 text-center text-xs font-black uppercase tracking-[0.18em] text-purple-100/48">{skinLabel}</p> : null}
           <div className="mt-5">
             <div className="flex items-center gap-4">
-              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} size="lg" />
+              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="lg" />
               <div className="min-w-0">
                 <h1 className="truncate text-4xl font-black text-white">{player.username}</h1>
                 <p className="mt-2 text-purple-100/50">Rank {rank ? `#${rank}` : "N/A"}</p>

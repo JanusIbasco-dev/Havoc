@@ -17,6 +17,7 @@ public record PluginSettings(
         long retryIntervalTicks,
         int maxRetryAttempts,
         String retryQueueFile,
+        boolean elyByLookupEnabled,
         boolean debug
 ) {
     public static PluginSettings from(FileConfiguration config) {
@@ -39,6 +40,7 @@ public record PluginSettings(
                 Math.max(20L, config.getLong("retry.interval-seconds", 30L) * 20L),
                 config.getInt("retry.max-attempts", 0),
                 config.getString("retry.queue-file", "retry-queue.json"),
+                config.getBoolean("skin.elyby-lookup-enabled", true),
                 config.getBoolean("logging.debug", true)
         );
     }

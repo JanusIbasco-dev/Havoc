@@ -62,7 +62,7 @@ export function WarPodium({ players }: WarPodiumProps) {
             </div>
 
             <div className="relative mt-4 flex flex-1 items-center justify-center">
-              <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} podium />
+              <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} podium />
             </div>
 
             <div className="relative mt-4 min-w-0">

@@ -21,7 +21,7 @@ public final class PlayerStatsListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        SkinData skinData = SkinService.from(player);
+        SkinData skinData = SkinService.from(player, plugin.settings().elyByLookupEnabled());
         boolean firstSeenLocally = !plugin.dataStore().hasPlayer(player.getUniqueId());
 
         PlayerRecord record = plugin.dataStore().getOrCreate(player, skinData);

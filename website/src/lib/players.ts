@@ -9,6 +9,10 @@ type PlayerDocument = {
   uuid: string;
   username: string;
   skinUrl?: string | null;
+  skinTextureValue?: string | null;
+  skinTextureSignature?: string | null;
+  skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
+  skinUpdatedAt?: string;
   kills: number;
   deaths: number;
   points: number;
@@ -192,6 +196,18 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
 
   if (typeof player.skinUrl === "string" && player.skinUrl.trim()) {
     setFields.skinUrl = player.skinUrl.trim();
+    setFields.skinUpdatedAt = now;
+  }
+  if (typeof player.skinTextureValue === "string" && player.skinTextureValue.trim()) {
+    setFields.skinTextureValue = player.skinTextureValue.trim();
+    setFields.skinUpdatedAt = now;
+  }
+  if (typeof player.skinTextureSignature === "string" && player.skinTextureSignature.trim()) {
+    setFields.skinTextureSignature = player.skinTextureSignature.trim();
+    setFields.skinUpdatedAt = now;
+  }
+  if (player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown") {
+    setFields.skinProvider = player.skinProvider;
   }
   if (typeof player.kills === "number") {
     setFields.kills = player.kills;
@@ -244,7 +260,10 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
     {
       $set: {
         username: player.username,
-        ...(typeof player.skinUrl === "string" && player.skinUrl.trim() ? { skinUrl: player.skinUrl.trim() } : {}),
+        ...(typeof player.skinUrl === "string" && player.skinUrl.trim() ? { skinUrl: player.skinUrl.trim(), skinUpdatedAt: now } : {}),
+        ...(typeof player.skinTextureValue === "string" && player.skinTextureValue.trim() ? { skinTextureValue: player.skinTextureValue.trim(), skinUpdatedAt: now } : {}),
+        ...(typeof player.skinTextureSignature === "string" && player.skinTextureSignature.trim() ? { skinTextureSignature: player.skinTextureSignature.trim(), skinUpdatedAt: now } : {}),
+        ...(player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown" ? { skinProvider: player.skinProvider } : {}),
         kills: player.kills ?? 0,
         deaths: player.deaths ?? 0,
         points: player.points ?? 0,
@@ -345,6 +364,10 @@ function toLeaderboardPlayer(player: WithId<PlayerDocument> | PlayerDocument): L
     uuid: player.uuid,
     username: player.username,
     skinUrl: player.skinUrl ?? "",
+    skinTextureValue: player.skinTextureValue ?? "",
+    skinTextureSignature: player.skinTextureSignature ?? "",
+    skinProvider: player.skinProvider ?? "unknown",
+    skinUpdatedAt: player.skinUpdatedAt,
     kills: player.kills ?? 0,
     deaths: player.deaths ?? 0,
     points: player.points ?? 0,

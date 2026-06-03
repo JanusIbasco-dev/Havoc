@@ -2,6 +2,10 @@ export type LeaderboardPlayer = {
   uuid: string;
   username: string;
   skinUrl?: string | null;
+  skinTextureValue?: string | null;
+  skinTextureSignature?: string | null;
+  skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
+  skinUpdatedAt?: string;
   kills: number;
   deaths: number;
   points: number;

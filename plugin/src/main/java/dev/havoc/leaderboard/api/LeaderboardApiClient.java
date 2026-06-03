@@ -49,7 +49,7 @@ public final class LeaderboardApiClient {
 
     public void updateSkin(PlayerRecord record, SkinData skinData) {
         JsonObject payload = basePlayerPayload(record);
-        payload.add("skin", skinPayload(skinData));
+        addSkinPayload(payload, skinData);
         payload.addProperty("timestamp", Instant.now().toString());
         sendAsync("update-skin", payload);
     }
@@ -205,7 +205,7 @@ public final class LeaderboardApiClient {
         payload.addProperty("points", record.points());
         payload.addProperty("kills", record.kills());
         payload.addProperty("deaths", record.deaths());
-        payload.add("skin", storedSkinPayload(record));
+        addSkinPayload(payload, new SkinData(record.skinValue(), record.skinSignature(), record.skinUrl(), record.skinProvider()));
         payload.addProperty("timestamp", Instant.now().toString());
         return payload;
     }
@@ -218,7 +218,15 @@ public final class LeaderboardApiClient {
     }
 
     private JsonObject storedSkinPayload(PlayerRecord record) {
-        return skinPayload(new SkinData(record.skinValue(), record.skinSignature(), record.skinUrl()));
+        return skinPayload(new SkinData(record.skinValue(), record.skinSignature(), record.skinUrl(), record.skinProvider()));
+    }
+
+    private void addSkinPayload(JsonObject payload, SkinData skinData) {
+        payload.add("skin", skinPayload(skinData));
+        payload.addProperty("skinUrl", skinData.skinUrl());
+        payload.addProperty("skinTextureValue", skinData.textureValue());
+        payload.addProperty("skinTextureSignature", skinData.signature());
+        payload.addProperty("skinProvider", skinData.provider());
     }
 
     private JsonObject skinPayload(SkinData skinData) {
@@ -226,6 +234,7 @@ public final class LeaderboardApiClient {
         skin.addProperty("textureValue", skinData.textureValue());
         skin.addProperty("signature", skinData.signature());
         skin.addProperty("skinUrl", skinData.skinUrl());
+        skin.addProperty("provider", skinData.provider());
         return skin;
     }
 }

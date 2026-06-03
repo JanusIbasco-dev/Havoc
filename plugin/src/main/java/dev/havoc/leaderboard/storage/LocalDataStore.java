@@ -58,6 +58,7 @@ public final class LocalDataStore {
         record.skinValue(data.getString(path + ".skin.value"));
         record.skinSignature(data.getString(path + ".skin.signature"));
         record.skinUrl(data.getString(path + ".skin.url"));
+        record.skinProvider(data.getString(path + ".skin.provider", "unknown"));
         return record;
     }
 
@@ -120,13 +121,15 @@ public final class LocalDataStore {
         data.set(path + ".skin.value", skinData.textureValue());
         data.set(path + ".skin.signature", skinData.signature());
         data.set(path + ".skin.url", skinData.skinUrl());
+        data.set(path + ".skin.provider", skinData.provider());
     }
 
     private String skinFingerprint(String path) {
-        return "%s|%s|%s".formatted(
+        return "%s|%s|%s|%s".formatted(
                 data.getString(path + ".skin.value", ""),
                 data.getString(path + ".skin.signature", ""),
-                data.getString(path + ".skin.url", "")
+                data.getString(path + ".skin.url", ""),
+                data.getString(path + ".skin.provider", "")
         );
     }
 

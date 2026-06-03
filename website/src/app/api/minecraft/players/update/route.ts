@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { unauthorized, badRequest, ok, serverError } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { requireString, seasonFromPayload, skinUrlFromPayload } from "@/lib/payload";
+import { requireString, seasonFromPayload, skinProviderFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload } from "@/lib/payload";
 import { upsertPlayer } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -22,6 +22,9 @@ export async function POST(request: NextRequest) {
       uuid,
       username,
       skinUrl: skinUrlFromPayload(payload),
+      skinTextureValue: skinTextureValueFromPayload(payload),
+      skinTextureSignature: skinTextureSignatureFromPayload(payload),
+      skinProvider: skinProviderFromPayload(payload),
       season: seasonFromPayload(payload)
     });
 

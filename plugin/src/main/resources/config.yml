@@ -21,5 +21,8 @@ retry:
   max-attempts: 0
   queue-file: "retry-queue.json"
 
+skin:
+  elyby-lookup-enabled: true
+
 logging:
   debug: true

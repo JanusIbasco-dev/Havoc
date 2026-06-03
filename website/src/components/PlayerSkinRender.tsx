@@ -1,28 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { getPlayerBodyRenderUrl } from "@/lib/skin";
 
 type PlayerSkinRenderProps = {
   uuid: string;
   username: string;
   skinUrl?: string | null;
+  skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
   compact?: boolean;
   podium?: boolean;
 };
 
-export function PlayerSkinRender({ uuid, username, skinUrl, compact = false, podium = false }: PlayerSkinRenderProps) {
+export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, compact = false, podium = false }: PlayerSkinRenderProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
-  const cleanUuid = uuid.replace(/-/g, "");
-  const usableSkinUrl = typeof skinUrl === "string" && skinUrl.trim() ? skinUrl.trim() : null;
-  const sources = [
-    usableSkinUrl,
-    `https://mc-heads.net/body/${encodeURIComponent(username)}/300`,
-    `https://mc-heads.net/body/${encodeURIComponent(uuid)}/300`,
-    `https://mc-heads.net/body/${encodeURIComponent(cleanUuid)}/300`,
-    `https://crafatar.com/renders/body/${encodeURIComponent(cleanUuid)}?overlay=true&scale=8`
-  ].filter(Boolean) as string[];
-  const src = sources[sourceIndex];
-  const renderFromTexture = usableSkinUrl && src === usableSkinUrl;
+  const primarySource = getPlayerBodyRenderUrl({ uuid, username, skinUrl, skinProvider });
+  const fallbackSources = primarySource.url ? [primarySource] : [];
+  const source = fallbackSources[sourceIndex] || { url: null, kind: "placeholder" as const };
+  const renderFromTexture = source.url && source.kind === "texture";
+  const textureUrl = renderFromTexture ? source.url : null;
   const frameClass = podium
     ? "h-[180px] w-[140px] rounded-2xl border border-purple-300/18 bg-black/22"
     : compact
@@ -32,11 +28,11 @@ export function PlayerSkinRender({ uuid, username, skinUrl, compact = false, pod
   return (
     <div className={`relative grid place-items-center overflow-hidden ${frameClass}`}>
       <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />
-      {renderFromTexture ? (
-        <TextureBody skinUrl={usableSkinUrl} username={username} compact={compact} podium={podium} onError={() => setSourceIndex((index) => index + 1)} />
-      ) : src ? (
+      {textureUrl ? (
+        <TextureBody skinUrl={textureUrl} username={username} compact={compact} podium={podium} onError={() => setSourceIndex((index) => index + 1)} />
+      ) : source.url && source.kind === "render" ? (
         <img
-          src={src}
+          src={source.url}
           alt={`${username} skin render`}
           onError={() => setSourceIndex((index) => index + 1)}
           className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${podium ? "max-h-[180px] max-w-[140px]" : compact ? "max-h-32" : "max-h-64"}`}

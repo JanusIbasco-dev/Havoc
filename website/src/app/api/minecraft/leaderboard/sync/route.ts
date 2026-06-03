@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { badRequest, ok, serverError, unauthorized } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { numberFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinUrlFromPayload } from "@/lib/payload";
+import { numberFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload } from "@/lib/payload";
 import { setPlayerStats } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -30,6 +30,9 @@ export async function POST(request: NextRequest) {
         uuid,
         username,
         skinUrl: skinUrlFromPayload(player),
+        skinTextureValue: skinTextureValueFromPayload(player),
+        skinTextureSignature: skinTextureSignatureFromPayload(player),
+        skinProvider: skinProviderFromPayload(player),
         kills: numberFromPayload(player, "kills"),
         deaths: numberFromPayload(player, "deaths"),
         points: numberFromPayload(player, "points"),

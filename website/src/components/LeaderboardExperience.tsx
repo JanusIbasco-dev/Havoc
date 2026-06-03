@@ -75,7 +75,7 @@ export function LeaderboardExperience({ players }: LeaderboardExperienceProps) {
                   <td className="px-3 py-4 text-lg font-black text-purple-200">#{rank}</td>
                   <td className="px-3 py-4">
                     <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                      <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} size="sm" />
+                      <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="sm" />
                       <span>{player.username}</span>
                     </Link>
                   </td>

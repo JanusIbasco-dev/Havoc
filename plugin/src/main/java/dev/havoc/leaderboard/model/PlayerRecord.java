@@ -8,6 +8,7 @@ public final class PlayerRecord {
     private String skinValue;
     private String skinSignature;
     private String skinUrl;
+    private String skinProvider;
     private long firstJoinTimestamp;
     private int points;
     private int kills;
@@ -53,6 +54,14 @@ public final class PlayerRecord {
 
     public void skinUrl(String skinUrl) {
         this.skinUrl = skinUrl;
+    }
+
+    public String skinProvider() {
+        return skinProvider;
+    }
+
+    public void skinProvider(String skinProvider) {
+        this.skinProvider = skinProvider;
     }
 
     public long firstJoinTimestamp() {
