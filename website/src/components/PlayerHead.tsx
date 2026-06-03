@@ -29,13 +29,22 @@ export function PlayerHead({ username, uuid, skinUrl, size = "md" }: PlayerHeadP
         className={`${sizes[size]} border border-purple-400/35 bg-black shadow-[0_0_28px_rgba(139,92,246,0.24)] [image-rendering:pixelated]`}
       >
         <div
-          className="h-full w-full bg-cover bg-no-repeat [image-rendering:pixelated]"
+          className="relative h-full w-full bg-cover bg-no-repeat [image-rendering:pixelated]"
           style={{
             backgroundImage: `url("${usableSkinUrl}")`,
             backgroundSize: "800% 800%",
             backgroundPosition: "14.2857% 14.2857%"
           }}
-        />
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-no-repeat [image-rendering:pixelated]"
+            style={{
+              backgroundImage: `url("${usableSkinUrl}")`,
+              backgroundSize: "800% 800%",
+              backgroundPosition: "71.4286% 14.2857%"
+            }}
+          />
+        </div>
         <img src={usableSkinUrl} alt="" className="hidden" onError={() => setFailed(true)} />
       </div>
     );

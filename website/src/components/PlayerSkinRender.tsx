@@ -24,7 +24,7 @@ export function PlayerSkinRender({ uuid, username, skinUrl, compact = false }: P
   const renderFromTexture = usableSkinUrl && src === usableSkinUrl;
 
   return (
-    <div className={`relative grid place-items-center overflow-hidden rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20 ${compact ? "min-h-36" : "min-h-72"}`}>
+    <div className={`relative grid place-items-center overflow-hidden rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20 ${compact ? "min-h-24" : "min-h-72"}`}>
       <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />
       {renderFromTexture ? (
         <TextureBody skinUrl={usableSkinUrl} username={username} compact={compact} onError={() => setSourceIndex((index) => index + 1)} />
@@ -48,22 +48,22 @@ export function PlayerSkinRender({ uuid, username, skinUrl, compact = false }: P
 }
 
 function TextureBody({ skinUrl, username, compact, onError }: { skinUrl: string; username: string; compact: boolean; onError: () => void }) {
-  const scale = compact ? 4 : 7;
+  const scale = compact ? 3 : 7;
 
   return (
     <div className="relative flex flex-col items-center drop-shadow-[0_0_34px_rgba(139,92,246,0.45)]" style={{ width: 16 * scale, height: 32 * scale }}>
       <img src={skinUrl} alt="" className="hidden" onError={onError} />
-      <SkinPart skinUrl={skinUrl} label={`${username} head`} x={8} y={8} w={8} h={8} scale={scale} className="z-10" />
+      <SkinPart skinUrl={skinUrl} label={`${username} head`} x={8} y={8} overlayX={40} overlayY={8} w={8} h={8} scale={scale} className="z-10" />
       <div className="flex">
-        <SkinPart skinUrl={skinUrl} label={`${username} right arm`} x={44} y={20} w={4} h={12} scale={scale} />
+        <SkinPart skinUrl={skinUrl} label={`${username} right arm`} x={44} y={20} overlayX={44} overlayY={36} w={4} h={12} scale={scale} />
         <div className="flex flex-col">
-          <SkinPart skinUrl={skinUrl} label={`${username} torso`} x={20} y={20} w={8} h={12} scale={scale} />
+          <SkinPart skinUrl={skinUrl} label={`${username} torso`} x={20} y={20} overlayX={20} overlayY={36} w={8} h={12} scale={scale} />
           <div className="flex">
-            <SkinPart skinUrl={skinUrl} label={`${username} right leg`} x={4} y={20} w={4} h={12} scale={scale} />
-            <SkinPart skinUrl={skinUrl} label={`${username} left leg`} x={20} y={52} w={4} h={12} scale={scale} />
+            <SkinPart skinUrl={skinUrl} label={`${username} right leg`} x={4} y={20} overlayX={4} overlayY={36} w={4} h={12} scale={scale} />
+            <SkinPart skinUrl={skinUrl} label={`${username} left leg`} x={20} y={52} overlayX={4} overlayY={52} w={4} h={12} scale={scale} />
           </div>
         </div>
-        <SkinPart skinUrl={skinUrl} label={`${username} left arm`} x={36} y={52} w={4} h={12} scale={scale} />
+        <SkinPart skinUrl={skinUrl} label={`${username} left arm`} x={36} y={52} overlayX={52} overlayY={52} w={4} h={12} scale={scale} />
       </div>
     </div>
   );
@@ -74,6 +74,8 @@ function SkinPart({
   label,
   x,
   y,
+  overlayX,
+  overlayY,
   w,
   h,
   scale,
@@ -83,6 +85,8 @@ function SkinPart({
   label: string;
   x: number;
   y: number;
+  overlayX?: number;
+  overlayY?: number;
   w: number;
   h: number;
   scale: number;
@@ -92,7 +96,7 @@ function SkinPart({
     <div
       role="img"
       aria-label={label}
-      className={`shrink-0 bg-no-repeat [image-rendering:pixelated] ${className}`}
+      className={`relative shrink-0 bg-no-repeat [image-rendering:pixelated] ${className}`}
       style={{
         width: w * scale,
         height: h * scale,
@@ -100,6 +104,17 @@ function SkinPart({
         backgroundSize: `${64 * scale}px ${64 * scale}px`,
         backgroundPosition: `-${x * scale}px -${y * scale}px`
       }}
-    />
+    >
+      {typeof overlayX === "number" && typeof overlayY === "number" ? (
+        <div
+          className="absolute inset-0 bg-no-repeat [image-rendering:pixelated]"
+          style={{
+            backgroundImage: `url("${skinUrl}")`,
+            backgroundSize: `${64 * scale}px ${64 * scale}px`,
+            backgroundPosition: `-${overlayX * scale}px -${overlayY * scale}px`
+          }}
+        />
+      ) : null}
+    </div>
   );
 }
