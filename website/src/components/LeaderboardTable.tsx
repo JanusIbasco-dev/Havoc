@@ -28,7 +28,7 @@ export function LeaderboardTable({ players }: LeaderboardTableProps) {
               <td className="px-3 py-4 font-black text-[var(--accent-strong)]">#{index + 1}</td>
               <td className="px-3 py-3">
                 <Link className="flex items-center gap-3 hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                  <PlayerHead username={player.username} skinUrl={player.skinUrl} />
+                  <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} />
                   <div>
                     <div className="font-bold">{player.username}</div>
                     <div className="max-w-[190px] truncate text-xs text-purple-100/45 sm:max-w-[300px]">{player.uuid}</div>

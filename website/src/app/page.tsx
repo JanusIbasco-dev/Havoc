@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { PlayerHead } from "@/components/PlayerHead";
 import { WarPodium } from "@/components/WarPodium";
-import { formatHours } from "@/lib/format";
+import { formatHours, formatPhilippineDate } from "@/lib/format";
 import { getPlayers } from "@/lib/players";
 import { getCurrentSeason, getDaysRemaining, getSeasonStatusLabel } from "@/lib/season-data";
 import { resolveSeason } from "@/lib/seasons";
@@ -183,11 +183,7 @@ function formatSeasonDate(value?: string) {
     return "TBD";
   }
 
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(date);
+  return formatPhilippineDate(date);
 }
 
 function StatusIcon({ name, danger }: { name: "users" | "calendar" | "globe" | "crown"; danger?: boolean }) {
