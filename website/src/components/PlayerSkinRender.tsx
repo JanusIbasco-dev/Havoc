@@ -7,9 +7,10 @@ type PlayerSkinRenderProps = {
   username: string;
   skinUrl?: string | null;
   compact?: boolean;
+  podium?: boolean;
 };
 
-export function PlayerSkinRender({ uuid, username, skinUrl, compact = false }: PlayerSkinRenderProps) {
+export function PlayerSkinRender({ uuid, username, skinUrl, compact = false, podium = false }: PlayerSkinRenderProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const cleanUuid = uuid.replace(/-/g, "");
   const usableSkinUrl = typeof skinUrl === "string" && skinUrl.trim() ? skinUrl.trim() : null;
@@ -22,18 +23,23 @@ export function PlayerSkinRender({ uuid, username, skinUrl, compact = false }: P
   ].filter(Boolean) as string[];
   const src = sources[sourceIndex];
   const renderFromTexture = usableSkinUrl && src === usableSkinUrl;
+  const frameClass = podium
+    ? "h-[180px] w-[140px] rounded-2xl border border-purple-300/18 bg-black/22"
+    : compact
+      ? "min-h-24 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20"
+      : "min-h-72 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20";
 
   return (
-    <div className={`relative grid place-items-center overflow-hidden rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20 ${compact ? "min-h-24" : "min-h-72"}`}>
+    <div className={`relative grid place-items-center overflow-hidden ${frameClass}`}>
       <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />
       {renderFromTexture ? (
-        <TextureBody skinUrl={usableSkinUrl} username={username} compact={compact} onError={() => setSourceIndex((index) => index + 1)} />
+        <TextureBody skinUrl={usableSkinUrl} username={username} compact={compact} podium={podium} onError={() => setSourceIndex((index) => index + 1)} />
       ) : src ? (
         <img
           src={src}
           alt={`${username} skin render`}
           onError={() => setSourceIndex((index) => index + 1)}
-          className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${compact ? "max-h-32" : "max-h-64"}`}
+          className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${podium ? "max-h-[180px] max-w-[140px]" : compact ? "max-h-32" : "max-h-64"}`}
         />
       ) : (
         <div className="relative grid h-52 w-full max-w-56 place-items-center border border-purple-300/22 bg-black/34 p-5 text-center shadow-[0_0_34px_rgba(139,92,246,0.18)]">
@@ -47,8 +53,8 @@ export function PlayerSkinRender({ uuid, username, skinUrl, compact = false }: P
   );
 }
 
-function TextureBody({ skinUrl, username, compact, onError }: { skinUrl: string; username: string; compact: boolean; onError: () => void }) {
-  const scale = compact ? 3 : 7;
+function TextureBody({ skinUrl, username, compact, podium, onError }: { skinUrl: string; username: string; compact: boolean; podium: boolean; onError: () => void }) {
+  const scale = podium ? 5 : compact ? 3 : 7;
 
   return (
     <div className="relative flex flex-col items-center drop-shadow-[0_0_34px_rgba(139,92,246,0.45)]" style={{ width: 16 * scale, height: 32 * scale }}>

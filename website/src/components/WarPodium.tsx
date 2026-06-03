@@ -10,131 +10,92 @@ type WarPodiumProps = {
 const podiumStyles = [
   {
     rank: "#1",
-    shell: "border-yellow-300/60 bg-yellow-300/[0.1] shadow-[0_0_62px_rgba(245,196,81,0.34)] md:-mt-6",
-    text: "text-yellow-100",
-    base: "h-20",
-    label: "Gold"
+    label: "Champion",
+    shell: "border-yellow-300/55 bg-yellow-300/[0.08] shadow-[0_0_54px_rgba(245,196,81,0.25)]",
+    rankText: "text-yellow-100",
+    accent: "from-yellow-200/24 via-purple-400/14 to-transparent",
+    order: "md:order-2 md:-translate-y-6"
   },
   {
     rank: "#2",
-    shell: "border-slate-200/45 bg-slate-200/[0.07] shadow-[0_0_42px_rgba(216,221,231,0.16)]",
-    text: "text-slate-100",
-    base: "h-14",
-    label: "Silver"
+    label: "Runner Up",
+    shell: "border-slate-200/35 bg-slate-200/[0.06] shadow-[0_0_38px_rgba(216,221,231,0.12)]",
+    rankText: "text-slate-100",
+    accent: "from-slate-100/18 via-purple-400/12 to-transparent",
+    order: "md:order-1"
   },
   {
     rank: "#3",
-    shell: "border-orange-300/45 bg-orange-300/[0.08] shadow-[0_0_42px_rgba(196,122,69,0.18)]",
-    text: "text-orange-100",
-    base: "h-10",
-    label: "Bronze"
+    label: "Third Place",
+    shell: "border-orange-300/35 bg-orange-300/[0.06] shadow-[0_0_38px_rgba(196,122,69,0.13)]",
+    rankText: "text-orange-100",
+    accent: "from-orange-200/18 via-purple-400/12 to-transparent",
+    order: "md:order-3"
   }
 ];
 
-export function WarPodium({ players, compact = false }: WarPodiumProps) {
-  const rankedPlayers = players.slice(0, 3).map((player, index) => ({ player, style: podiumStyles[index] }));
-  const displayPlayers = rankedPlayers.length === 3 ? [rankedPlayers[1], rankedPlayers[0], rankedPlayers[2]] : rankedPlayers;
+export function WarPodium({ players }: WarPodiumProps) {
+  const entries = players.slice(0, 3).map((player, index) => ({
+    player,
+    style: podiumStyles[index]
+  }));
 
-  if (compact) {
-    return <CompactPodium entries={displayPlayers} />;
+  if (entries.length === 0) {
+    return null;
   }
 
   return (
-    <section className={podiumGridClass(displayPlayers.length)}>
-      {displayPlayers.map(({ player, style }) => (
+    <section className="mx-auto w-full max-w-6xl">
+      <div className={podiumGridClass(entries.length)}>
+        {entries.map(({ player, style }) => (
           <Link
-            key={player.uuid}
+            key={`${player.uuid}-${player.season}`}
             href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
-            className={`neon-hover rounded-3xl border p-6 transition duration-200 hover:-translate-y-2 ${style.shell}`}
+            className={`neon-hover group relative flex min-h-[340px] w-full min-w-0 flex-col overflow-hidden rounded-2xl border p-5 text-center backdrop-blur-md transition duration-200 hover:-translate-y-1 ${style.shell} ${style.order}`}
           >
-            <PodiumContent compact={compact} style={style} username={player.username} points={`${player.points} Points`} kills={`${player.kills} Kills`} uuid={player.uuid} skinUrl={player.skinUrl} />
-          </Link>
-      ))}
-    </section>
-  );
-}
-
-function CompactPodium({ entries }: { entries: Array<{ player: LeaderboardPlayer; style: (typeof podiumStyles)[number] }> }) {
-  return (
-    <section className="mb-12 mt-10 min-h-[380px] w-full overflow-visible pt-12">
-      <div className={`${podiumGridClass(entries.length)} min-h-[320px] w-full items-end overflow-visible`}>
-      {entries.map(({ player, style }) => {
-        const gold = style.rank === "#1";
-        return (
-          <div key={player.uuid} className="min-w-0">
-          <div className="flex w-full min-w-0 flex-col items-stretch">
-              <Link
-                href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
-                className={`neon-hover flex w-full min-w-0 overflow-hidden ${gold ? "h-[260px] translate-y-[-20px] border-yellow-300/70 shadow-[0_0_60px_rgba(245,196,81,0.3)]" : "h-[230px]"} flex-col items-center justify-start border bg-black/48 px-3 pb-3 pt-4 text-center backdrop-blur-md transition duration-200 hover:-translate-y-1 ${style.shell.replace(" md:-mt-6", "")}`}
-              >
-                {gold ? <CrownIcon /> : null}
-                <PodiumContent compact style={style} username={player.username} points={`${player.points} Points`} kills={`${player.kills} Kills`} uuid={player.uuid} skinUrl={player.skinUrl} />
-              </Link>
-            <div className={`${style.base} w-full border border-purple-500/18 bg-black/46 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]`}>
-              <div className={`h-full w-full ${style.label === "Gold" ? "bg-yellow-300/[0.08]" : style.label === "Silver" ? "bg-slate-200/[0.06]" : "bg-orange-300/[0.07]"}`} />
+            <div className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b ${style.accent}`} />
+            <div className="relative flex items-center justify-between gap-3">
+              <span className={`text-3xl font-black leading-none ${style.rankText}`}>{style.rank}</span>
+              <span className="border border-purple-300/16 bg-black/24 px-3 py-1 text-[0.65rem] font-black uppercase tracking-[0.16em] text-purple-100/58">
+                {style.label}
+              </span>
             </div>
-          </div>
-          </div>
-        );
-      })}
+
+            <div className="relative mt-4 flex flex-1 items-center justify-center">
+              <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} podium />
+            </div>
+
+            <div className="relative mt-4 min-w-0">
+              <h3 className="truncate text-2xl font-black leading-tight text-white">{player.username}</h3>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <PodiumStat label="Points" value={player.points} primary />
+                <PodiumStat label="Kills" value={player.kills} />
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );
 }
 
 function podiumGridClass(count: number) {
-  if (count <= 1) {
-    return "grid grid-cols-1 justify-items-center gap-5 md:[&>*]:max-w-[360px]";
+  if (count === 1) {
+    return "grid grid-cols-1 justify-items-center gap-5 [&>*]:max-w-[420px]";
   }
 
   if (count === 2) {
-    return "grid gap-5 sm:grid-cols-2";
+    return "grid grid-cols-1 gap-5 sm:grid-cols-2 sm:items-end";
   }
 
-  return "grid gap-5 md:grid-cols-[1fr_1.15fr_1fr]";
+  return "grid grid-cols-1 gap-5 md:grid-cols-3 md:items-end";
 }
 
-function PodiumContent({
-  style,
-  username,
-  points,
-  kills,
-  uuid,
-  skinUrl,
-  compact
-}: {
-  style: (typeof podiumStyles)[number];
-  username: string;
-  points: string;
-  kills: string;
-  uuid?: string;
-  skinUrl?: string | null;
-  compact?: boolean;
-}) {
+function PodiumStat({ label, value, primary }: { label: string; value: number; primary?: boolean }) {
   return (
-    <>
-      <div className={compact ? "relative text-center" : "flex items-center justify-between"}>
-        <span className={`${compact ? "text-2xl" : "text-3xl"} font-black ${style.text}`}>{style.rank}</span>
-      </div>
-      <div className={`${compact ? "relative mt-3 flex-col text-center" : "mt-6"} flex items-center gap-4`}>
-        <div className={`${compact ? (style.rank === "#1" ? "h-[110px] w-full" : "h-[95px] w-full") : "h-36 w-28"} grid shrink-0 place-items-center overflow-hidden bg-black/10`}>
-          {uuid ? <PlayerSkinRender uuid={uuid} username={username} skinUrl={skinUrl} compact /> : null}
-        </div>
-        <div className={`min-w-0 flex-1 ${compact ? "text-center" : "text-left"}`}>
-          <h3 className={`${compact ? "max-w-full truncate whitespace-nowrap text-xs font-semibold sm:text-sm" : "text-2xl break-words font-black"} leading-tight text-white`}>{username}</h3>
-          <p className={`${compact ? "mt-2 text-xs" : "mt-1 text-sm"} text-purple-100/60`}>{points}</p>
-          <p className={`${compact ? "text-xs" : "text-sm"} text-purple-100/42`}>{kills}</p>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function CrownIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="mb-1 h-7 w-7 text-yellow-100 drop-shadow-[0_0_16px_rgba(245,196,81,0.82)]" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m3 8 4.5 4L12 5l4.5 7L21 8l-2 12H5Z" />
-      <path d="M5 20h14" />
-    </svg>
+    <div className="border border-purple-300/12 bg-black/28 p-3">
+      <p className="text-[0.65rem] font-black uppercase tracking-[0.16em] text-purple-100/42">{label}</p>
+      <p className={`mt-1 text-xl font-black ${primary ? "text-purple-100" : "text-purple-50/82"}`}>{value}</p>
+    </div>
   );
 }
