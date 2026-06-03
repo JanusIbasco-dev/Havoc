@@ -1,0 +1,25 @@
+api:
+  base-url: "http://localhost:3000/api/minecraft"
+  api-key: ""
+  timeout-seconds: 10
+  endpoints:
+    register-player: "/players/register"
+    update-player: "/players/update"
+    update-skin: "/players/skin"
+    kill-event: "/events/kill"
+    death-event: "/events/death"
+    sync-points: "/leaderboard/sync"
+
+points:
+  kill-award: 15
+  death-deduction: 13
+  deduct-only-pvp-deaths: true
+
+retry:
+  enabled: true
+  interval-seconds: 30
+  max-attempts: 0
+  queue-file: "retry-queue.json"
+
+logging:
+  debug: true

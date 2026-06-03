@@ -1,0 +1,15 @@
+name: LeaderboardHavoc
+version: 1.0.0
+main: dev.havoc.leaderboard.LeaderboardHavocPlugin
+api-version: "1.21"
+author: Havoc SMP
+description: Keeps the Havoc SMP website leaderboard synchronized with PvP stats.
+commands:
+  leaderboardhavoc:
+    description: Admin commands for Leaderboard Havoc
+    usage: /leaderboardhavoc reload|sync|points
+    permission: leaderboardhavoc.admin
+permissions:
+  leaderboardhavoc.admin:
+    description: Allows using Leaderboard Havoc admin commands
+    default: op

@@ -1,0 +1,175 @@
+package dev.havoc.leaderboard.api;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import dev.havoc.leaderboard.LeaderboardHavocPlugin;
+import dev.havoc.leaderboard.config.PluginSettings;
+import dev.havoc.leaderboard.model.PlayerRecord;
+import dev.havoc.leaderboard.model.SkinData;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+
+public final class LeaderboardApiClient {
+    private final LeaderboardHavocPlugin plugin;
+    private final PluginSettings settings;
+    private final RetryQueue retryQueue;
+    private final HttpClient httpClient;
+
+    public LeaderboardApiClient(LeaderboardHavocPlugin plugin, PluginSettings settings, RetryQueue retryQueue) {
+        this.plugin = plugin;
+        this.settings = settings;
+        this.retryQueue = retryQueue;
+        this.httpClient = HttpClient.newBuilder()
+                .connectTimeout(settings.timeout())
+                .build();
+        retryQueue.setApiClient(this);
+    }
+
+    public void registerPlayer(PlayerRecord record) {
+        JsonObject payload = playerPayload(record);
+        sendAsync("register-player", payload);
+    }
+
+    public void updatePlayer(PlayerRecord record) {
+        JsonObject payload = playerPayload(record);
+        sendAsync("update-player", payload);
+    }
+
+    public void updateSkin(PlayerRecord record, SkinData skinData) {
+        JsonObject payload = basePlayerPayload(record);
+        payload.add("skin", skinPayload(skinData));
+        payload.addProperty("timestamp", Instant.now().toString());
+        sendAsync("update-skin", payload);
+    }
+
+    public void sendKillEvent(PlayerRecord killer, PlayerRecord victim, int pointsAwarded, long timestamp) {
+        JsonObject payload = new JsonObject();
+        payload.addProperty("killerUuid", killer.uuid().toString());
+        payload.addProperty("killerUsername", killer.username());
+        payload.addProperty("victimUuid", victim.uuid().toString());
+        payload.addProperty("victimUsername", victim.username());
+        payload.addProperty("pointsAwarded", pointsAwarded);
+        payload.addProperty("killerUpdatedTotalPoints", killer.points());
+        payload.addProperty("timestamp", Instant.ofEpochMilli(timestamp).toString());
+        sendAsync("kill-event", payload);
+    }
+
+    public void sendDeathEvent(PlayerRecord player, int pointsDeducted, long timestamp) {
+        JsonObject payload = basePlayerPayload(player);
+        payload.addProperty("pointsDeducted", pointsDeducted);
+        payload.addProperty("updatedTotalPoints", player.points());
+        payload.addProperty("timestamp", Instant.ofEpochMilli(timestamp).toString());
+        sendAsync("death-event", payload);
+    }
+
+    public void syncPoints(PlayerRecord record) {
+        JsonObject payload = basePlayerPayload(record);
+        payload.addProperty("points", record.points());
+        payload.addProperty("kills", record.kills());
+        payload.addProperty("deaths", record.deaths());
+        payload.addProperty("timestamp", Instant.now().toString());
+        sendAsync("sync-points", payload);
+    }
+
+    public void syncLeaderboard(List<PlayerRecord> records) {
+        JsonObject payload = new JsonObject();
+        JsonArray players = new JsonArray();
+        for (PlayerRecord record : records) {
+            JsonObject player = basePlayerPayload(record);
+            player.addProperty("points", record.points());
+            player.addProperty("kills", record.kills());
+            player.addProperty("deaths", record.deaths());
+            players.add(player);
+        }
+        payload.add("players", players);
+        payload.addProperty("timestamp", Instant.now().toString());
+        sendAsync("sync-points", payload);
+    }
+
+    public CompletableFuture<Boolean> sendAsync(String endpointKey, JsonObject payload) {
+        return CompletableFuture.supplyAsync(() -> sendBlocking(endpointKey, payload, true));
+    }
+
+    public boolean sendBlocking(String endpointKey, JsonObject payload, boolean queueOnFailure) {
+        if (settings.baseUrl().isBlank() || settings.apiKey().isBlank() || "change-me".equals(settings.apiKey())) {
+            plugin.getLogger().warning("API URL or key is not configured; storing request locally for " + endpointKey);
+            if (queueOnFailure) {
+                retryQueue.enqueue(endpointKey, payload);
+            }
+            return false;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(settings.endpointUrl(endpointKey)))
+                .timeout(settings.timeout())
+                .header("Authorization", "Bearer " + settings.apiKey())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload.toString(), StandardCharsets.UTF_8))
+                .build();
+
+        try {
+            if (settings.debug()) {
+                plugin.getLogger().info("Sending API request: " + endpointKey + " -> " + request.uri());
+            }
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            boolean success = response.statusCode() >= 200 && response.statusCode() < 300;
+            if (!success) {
+                plugin.getLogger().warning("API request failed for " + endpointKey + " with HTTP " + response.statusCode() + ": " + response.body());
+                if (queueOnFailure) {
+                    retryQueue.enqueue(endpointKey, payload);
+                }
+            } else if (settings.debug()) {
+                plugin.getLogger().info("API request succeeded for " + endpointKey + " with HTTP " + response.statusCode());
+            }
+            return success;
+        } catch (IOException | InterruptedException | IllegalArgumentException exception) {
+            if (exception instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            plugin.getLogger().log(Level.WARNING, "API request failed for " + endpointKey + ".", exception);
+            if (queueOnFailure) {
+                retryQueue.enqueue(endpointKey, payload);
+            }
+            return false;
+        }
+    }
+
+    private JsonObject playerPayload(PlayerRecord record) {
+        JsonObject payload = basePlayerPayload(record);
+        payload.addProperty("firstJoinTimestamp", Instant.ofEpochMilli(record.firstJoinTimestamp()).toString());
+        payload.addProperty("points", record.points());
+        payload.addProperty("kills", record.kills());
+        payload.addProperty("deaths", record.deaths());
+        payload.add("skin", storedSkinPayload(record));
+        payload.addProperty("timestamp", Instant.now().toString());
+        return payload;
+    }
+
+    private JsonObject basePlayerPayload(PlayerRecord record) {
+        JsonObject payload = new JsonObject();
+        payload.addProperty("uuid", record.uuid().toString());
+        payload.addProperty("username", record.username());
+        return payload;
+    }
+
+    private JsonObject storedSkinPayload(PlayerRecord record) {
+        return skinPayload(new SkinData(record.skinValue(), record.skinSignature(), record.skinUrl()));
+    }
+
+    private JsonObject skinPayload(SkinData skinData) {
+        JsonObject skin = new JsonObject();
+        skin.addProperty("textureValue", skinData.textureValue());
+        skin.addProperty("signature", skinData.signature());
+        skin.addProperty("skinUrl", skinData.skinUrl());
+        return skin;
+    }
+}
