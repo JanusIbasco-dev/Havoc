@@ -1,16 +1,38 @@
 export function skinUrlFromPayload(payload: Record<string, unknown>) {
   const directSkinUrl = payload.skinUrl;
-  if (typeof directSkinUrl === "string") {
-    return directSkinUrl;
+  if (typeof directSkinUrl === "string" && isUsableSkinUrl(directSkinUrl)) {
+    return directSkinUrl.trim();
   }
 
   const skin = payload.skin;
-  if (skin && typeof skin === "object" && "skinUrl" in skin) {
+  if (skin && typeof skin === "object") {
     const nestedSkinUrl = (skin as { skinUrl?: unknown }).skinUrl;
-    return typeof nestedSkinUrl === "string" ? nestedSkinUrl : null;
+    const textureValue = (skin as { textureValue?: unknown }).textureValue;
+    if (typeof nestedSkinUrl === "string" && isUsableSkinUrl(nestedSkinUrl)) {
+      return nestedSkinUrl.trim();
+    }
+    if (typeof textureValue === "string") {
+      return skinUrlFromTextureValue(textureValue);
+    }
   }
 
   return null;
+}
+
+function isUsableSkinUrl(value: string) {
+  const trimmed = value.trim();
+  return trimmed.startsWith("https://") || trimmed.startsWith("http://");
+}
+
+function skinUrlFromTextureValue(textureValue: string) {
+  try {
+    const decoded = Buffer.from(textureValue, "base64").toString("utf8");
+    const parsed = JSON.parse(decoded) as { textures?: { SKIN?: { url?: unknown } } };
+    const url = parsed.textures?.SKIN?.url;
+    return typeof url === "string" && isUsableSkinUrl(url) ? url.trim() : null;
+  } catch {
+    return null;
+  }
 }
 
 export function seasonFromPayload(payload: Record<string, unknown>) {

@@ -15,10 +15,31 @@ const sizes = {
   lg: "h-24 w-24"
 };
 
-export function PlayerHead({ username, uuid, size = "md" }: PlayerHeadProps) {
+export function PlayerHead({ username, uuid, skinUrl, size = "md" }: PlayerHeadProps) {
   const [failed, setFailed] = useState(false);
   const identifier = encodeURIComponent(uuid || username);
   const src = `https://mc-heads.net/avatar/${identifier}/100`;
+  const usableSkinUrl = typeof skinUrl === "string" && skinUrl.trim() ? skinUrl.trim() : null;
+
+  if (usableSkinUrl && !failed) {
+    return (
+      <div
+        role="img"
+        aria-label={`${username} head`}
+        className={`${sizes[size]} border border-purple-400/35 bg-black shadow-[0_0_28px_rgba(139,92,246,0.24)] [image-rendering:pixelated]`}
+      >
+        <div
+          className="h-full w-full bg-cover bg-no-repeat [image-rendering:pixelated]"
+          style={{
+            backgroundImage: `url("${usableSkinUrl}")`,
+            backgroundSize: "800% 800%",
+            backgroundPosition: "14.2857% 14.2857%"
+          }}
+        />
+        <img src={usableSkinUrl} alt="" className="hidden" onError={() => setFailed(true)} />
+      </div>
+    );
+  }
 
   if (!failed) {
     return (

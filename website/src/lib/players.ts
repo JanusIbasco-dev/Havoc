@@ -190,8 +190,8 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     updatedAt: now
   };
 
-  if ("skinUrl" in player) {
-    setFields.skinUrl = player.skinUrl ?? "";
+  if (typeof player.skinUrl === "string" && player.skinUrl.trim()) {
+    setFields.skinUrl = player.skinUrl.trim();
   }
   if (typeof player.kills === "number") {
     setFields.kills = player.kills;
@@ -244,7 +244,7 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
     {
       $set: {
         username: player.username,
-        skinUrl: player.skinUrl ?? "",
+        ...(typeof player.skinUrl === "string" && player.skinUrl.trim() ? { skinUrl: player.skinUrl.trim() } : {}),
         kills: player.kills ?? 0,
         deaths: player.deaths ?? 0,
         points: player.points ?? 0,

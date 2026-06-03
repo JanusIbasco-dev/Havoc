@@ -39,7 +39,7 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
 
       <section className="grid gap-6 lg:grid-cols-[390px_1fr]">
         <aside className="glass-panel purple-glow overflow-hidden rounded-3xl border-purple-300/20 p-5 shadow-[0_0_60px_rgba(139,92,246,0.18)]">
-          <PlayerSkinRender uuid={player.uuid} username={player.username} />
+          <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} />
           <div className="mt-5">
             <div className="flex items-center gap-4">
               <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} size="lg" />

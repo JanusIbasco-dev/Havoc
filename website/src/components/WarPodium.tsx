@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PlayerSkinRender } from "@/components/PlayerSkinRender";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type WarPodiumProps = {
@@ -119,11 +120,7 @@ function PodiumContent({
       </div>
       <div className={`${compact ? "relative mt-3 flex-col text-center" : "mt-6"} flex items-center gap-4`}>
         <div className={`${compact ? (style.rank === "#1" ? "h-[110px] w-full" : "h-[95px] w-full") : "h-36 w-28"} grid shrink-0 place-items-center overflow-hidden bg-black/10`}>
-          <img
-            src={`https://mc-heads.net/body/${encodeURIComponent(username)}/120`}
-            alt={`${username} skin render`}
-            className={`${compact ? (style.rank === "#1" ? "max-h-[110px]" : "max-h-[95px]") : "max-h-full"} h-auto w-auto max-w-full object-contain drop-shadow-[0_0_24px_rgba(139,92,246,0.34)] [image-rendering:pixelated]`}
-          />
+          {uuid ? <PlayerSkinRender uuid={uuid} username={username} skinUrl={skinUrl} compact /> : null}
         </div>
         <div className={`min-w-0 flex-1 ${compact ? "text-center" : "text-left"}`}>
           <h3 className={`${compact ? "max-w-full truncate whitespace-nowrap text-xs font-semibold sm:text-sm" : "text-2xl break-words font-black"} leading-tight text-white`}>{username}</h3>
