@@ -15,6 +15,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -23,6 +25,7 @@ public final class LeaderboardApiClient {
     private final PluginSettings settings;
     private final RetryQueue retryQueue;
     private final HttpClient httpClient;
+    private static final int MAX_REDIRECTS = 5;
 
     public LeaderboardApiClient(LeaderboardHavocPlugin plugin, PluginSettings settings, RetryQueue retryQueue) {
         this.plugin = plugin;
@@ -108,27 +111,18 @@ public final class LeaderboardApiClient {
             return false;
         }
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(settings.endpointUrl(endpointKey)))
-                .timeout(settings.timeout())
-                .header("Authorization", "Bearer " + settings.apiKey())
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(payload.toString(), StandardCharsets.UTF_8))
-                .build();
-
+        String requestBody = payload.toString();
+        URI requestUri = URI.create(settings.endpointUrl(endpointKey));
         try {
-            if (settings.debug()) {
-                plugin.getLogger().info("Sending API request: " + endpointKey + " -> " + request.uri());
-            }
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = sendWithRedirects(endpointKey, requestUri, requestBody);
             boolean success = response.statusCode() >= 200 && response.statusCode() < 300;
             if (!success) {
-                plugin.getLogger().warning("API request failed for " + endpointKey + " with HTTP " + response.statusCode() + ": " + response.body());
+                plugin.getLogger().warning("API request failed for " + endpointKey + " at " + response.uri() + " with HTTP " + response.statusCode() + ": " + response.body());
                 if (queueOnFailure) {
                     retryQueue.enqueue(endpointKey, payload);
                 }
             } else if (settings.debug()) {
-                plugin.getLogger().info("API request succeeded for " + endpointKey + " with HTTP " + response.statusCode());
+                plugin.getLogger().info("API request succeeded for " + endpointKey + " at " + response.uri() + " with HTTP " + response.statusCode());
             }
             return success;
         } catch (IOException | InterruptedException | IllegalArgumentException exception) {
@@ -141,6 +135,68 @@ public final class LeaderboardApiClient {
             }
             return false;
         }
+    }
+
+    private HttpResponse<String> sendWithRedirects(String endpointKey, URI initialUri, String requestBody) throws IOException, InterruptedException {
+        URI currentUri = initialUri;
+
+        for (int redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount++) {
+            HttpRequest request = buildPostRequest(currentUri, requestBody);
+            if (settings.debug()) {
+                plugin.getLogger().info("Sending API request: " + endpointKey + " -> " + request.uri());
+            }
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            logResponseDiagnostics(endpointKey, response);
+
+            if (!isRedirect(response.statusCode())) {
+                if (settings.debug()) {
+                    plugin.getLogger().info("Final API URL for " + endpointKey + ": " + response.uri());
+                }
+                return response;
+            }
+
+            Optional<String> location = response.headers().firstValue("location");
+            if (settings.debug()) {
+                plugin.getLogger().warning("API redirect for " + endpointKey + " returned HTTP " + response.statusCode() + " Location: " + location.orElse("<missing>"));
+            }
+
+            if (location.isEmpty()) {
+                return response;
+            }
+
+            currentUri = currentUri.resolve(location.get());
+        }
+
+        throw new IOException("Too many redirects for " + endpointKey + " after " + MAX_REDIRECTS + " redirects.");
+    }
+
+    private HttpRequest buildPostRequest(URI uri, String requestBody) {
+        return HttpRequest.newBuilder()
+                .uri(uri)
+                .timeout(settings.timeout())
+                .header("Authorization", "Bearer " + settings.apiKey())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .build();
+    }
+
+    private void logResponseDiagnostics(String endpointKey, HttpResponse<String> response) {
+        if (!settings.debug()) {
+            return;
+        }
+
+        plugin.getLogger().info("API response for " + endpointKey + " from " + response.uri() + " returned HTTP " + response.statusCode());
+        for (Map.Entry<String, List<String>> header : response.headers().map().entrySet()) {
+            plugin.getLogger().info("API response header for " + endpointKey + ": " + header.getKey() + "=" + String.join(",", header.getValue()));
+        }
+        response.headers().firstValue("location").ifPresent((location) ->
+                plugin.getLogger().warning("API Location header for " + endpointKey + ": " + location)
+        );
+    }
+
+    private boolean isRedirect(int statusCode) {
+        return statusCode == 301 || statusCode == 302 || statusCode == 303 || statusCode == 307 || statusCode == 308;
     }
 
     private JsonObject playerPayload(PlayerRecord record) {

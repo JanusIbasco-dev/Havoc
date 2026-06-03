@@ -44,7 +44,7 @@ public record PluginSettings(
     }
 
     public String endpointUrl(String key) {
-        String path = endpoints.getOrDefault(key, "");
+        String path = trimTrailingSlash(endpoints.getOrDefault(key, ""));
         if (!path.startsWith("/")) {
             path = "/" + path;
         }

@@ -159,18 +159,29 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     setFields.playtimeHours = player.playtimeHours ?? player.hoursOfGameplay ?? 0;
   }
 
+  const setOnInsertFields: Partial<PlayerDocument> = {
+    uuid: player.uuid,
+    firstJoin: player.firstJoin ?? player.firstJoinTimestamp ?? now
+  };
+
+  if (typeof setFields.kills !== "number") {
+    setOnInsertFields.kills = 0;
+  }
+  if (typeof setFields.deaths !== "number") {
+    setOnInsertFields.deaths = 0;
+  }
+  if (typeof setFields.points !== "number") {
+    setOnInsertFields.points = 0;
+  }
+  if (typeof setFields.playtimeHours !== "number") {
+    setOnInsertFields.playtimeHours = 0;
+  }
+
   await db.collection<PlayerDocument>(collectionName).updateOne(
     { uuid: player.uuid, season },
     {
       $set: setFields,
-      $setOnInsert: {
-        uuid: player.uuid,
-        kills: player.kills ?? 0,
-        deaths: player.deaths ?? 0,
-        points: player.points ?? 0,
-        playtimeHours: player.playtimeHours ?? player.hoursOfGameplay ?? 0,
-        firstJoin: player.firstJoin ?? player.firstJoinTimestamp ?? now
-      }
+      $setOnInsert: setOnInsertFields
     },
     { upsert: true }
   );
