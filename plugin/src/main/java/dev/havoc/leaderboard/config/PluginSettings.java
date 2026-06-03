@@ -29,6 +29,7 @@ public record PluginSettings(
                         "register-player", config.getString("api.endpoints.register-player", "/players/register"),
                         "update-player", config.getString("api.endpoints.update-player", "/players/update"),
                         "update-skin", config.getString("api.endpoints.update-skin", "/players/skin"),
+                        "refresh-skin", config.getString("api.endpoints.refresh-skin", "/players/refresh-skin"),
                         "kill-event", config.getString("api.endpoints.kill-event", "/events/kill"),
                         "death-event", config.getString("api.endpoints.death-event", "/events/death"),
                         "sync-points", config.getString("api.endpoints.sync-points", "/leaderboard/sync")

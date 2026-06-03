@@ -6,6 +6,7 @@ api:
     register-player: "/players/register"
     update-player: "/players/update"
     update-skin: "/players/skin"
+    refresh-skin: "/players/refresh-skin"
     kill-event: "/events/kill"
     death-event: "/events/death"
     sync-points: "/leaderboard/sync"

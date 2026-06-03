@@ -208,6 +208,7 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
   }
   if (player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown") {
     setFields.skinProvider = player.skinProvider;
+    setFields.skinUpdatedAt = now;
   }
   if (typeof player.kills === "number") {
     setFields.kills = player.kills;
@@ -263,7 +264,7 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
         ...(typeof player.skinUrl === "string" && player.skinUrl.trim() ? { skinUrl: player.skinUrl.trim(), skinUpdatedAt: now } : {}),
         ...(typeof player.skinTextureValue === "string" && player.skinTextureValue.trim() ? { skinTextureValue: player.skinTextureValue.trim(), skinUpdatedAt: now } : {}),
         ...(typeof player.skinTextureSignature === "string" && player.skinTextureSignature.trim() ? { skinTextureSignature: player.skinTextureSignature.trim(), skinUpdatedAt: now } : {}),
-        ...(player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown" ? { skinProvider: player.skinProvider } : {}),
+        ...(player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown" ? { skinProvider: player.skinProvider, skinUpdatedAt: now } : {}),
         kills: player.kills ?? 0,
         deaths: player.deaths ?? 0,
         points: player.points ?? 0,

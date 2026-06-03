@@ -41,7 +41,7 @@ public final class PlayerStatsListener implements Listener {
                 plugin.getLogger().info("Updating changed player profile for " + player.getName() + " (" + player.getUniqueId() + ")");
             }
             plugin.apiClient().updatePlayer(updated);
-            plugin.apiClient().updateSkin(updated, skinData);
+            plugin.apiClient().refreshSkin(updated, skinData);
         } else if (plugin.settings().debug()) {
             plugin.getLogger().info("Player profile unchanged for " + record.username() + " (" + player.getUniqueId() + ")");
         }

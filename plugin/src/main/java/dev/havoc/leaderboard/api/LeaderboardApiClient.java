@@ -54,6 +54,13 @@ public final class LeaderboardApiClient {
         sendAsync("update-skin", payload);
     }
 
+    public void refreshSkin(PlayerRecord record, SkinData skinData) {
+        JsonObject payload = basePlayerPayload(record);
+        addSkinPayload(payload, skinData);
+        payload.addProperty("timestamp", Instant.now().toString());
+        sendAsync("refresh-skin", payload);
+    }
+
     public void sendKillEvent(PlayerRecord killer, PlayerRecord victim, int pointsAwarded, long timestamp) {
         JsonObject payload = new JsonObject();
         payload.addProperty("killerUuid", killer.uuid().toString());

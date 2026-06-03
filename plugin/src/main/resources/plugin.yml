@@ -7,7 +7,7 @@ description: Keeps the Havoc SMP website leaderboard synchronized with PvP stats
 commands:
   leaderboardhavoc:
     description: Admin commands for Leaderboard Havoc
-    usage: /leaderboardhavoc reload|sync|points
+    usage: /leaderboardhavoc reload|sync|points|refreshskin
     permission: leaderboardhavoc.admin
 permissions:
   leaderboardhavoc.admin:

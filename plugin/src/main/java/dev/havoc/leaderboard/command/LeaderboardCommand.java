@@ -2,12 +2,15 @@ package dev.havoc.leaderboard.command;
 
 import dev.havoc.leaderboard.LeaderboardHavocPlugin;
 import dev.havoc.leaderboard.model.PlayerRecord;
+import dev.havoc.leaderboard.model.SkinData;
+import dev.havoc.leaderboard.skin.SkinService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +32,7 @@ public final class LeaderboardCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 0) {
-            sender.sendMessage("Usage: /" + label + " reload|sync|points [player]");
+            sender.sendMessage("Usage: /" + label + " reload|sync|points|refreshskin [player]");
             return true;
         }
 
@@ -44,7 +47,8 @@ public final class LeaderboardCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("Queued leaderboard sync for " + records.size() + " player(s).");
             }
             case "points" -> showPoints(sender, args);
-            default -> sender.sendMessage("Usage: /" + label + " reload|sync|points [player]");
+            case "refreshskin" -> refreshSkin(sender, args);
+            default -> sender.sendMessage("Usage: /" + label + " reload|sync|points|refreshskin [player]");
         }
         return true;
     }
@@ -61,14 +65,14 @@ public final class LeaderboardCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 1) {
-            return List.of("reload", "sync", "points").stream()
+            return List.of("reload", "sync", "points", "refreshskin").stream()
                     .filter(option -> option.startsWith(args[0].toLowerCase()))
                     .toList();
         }
 
-        if (args.length == 2 && "points".equalsIgnoreCase(args[0])) {
+        if (args.length == 2 && ("points".equalsIgnoreCase(args[0]) || "refreshskin".equalsIgnoreCase(args[0]))) {
             List<String> names = new ArrayList<>();
-            for (org.bukkit.entity.Player player : Bukkit.getOnlinePlayers()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
                     names.add(player.getName());
                 }
@@ -99,5 +103,26 @@ public final class LeaderboardCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage(record.username() + ": " + record.points() + " points, "
                 + record.kills() + " kills, " + record.deaths() + " deaths.");
+    }
+
+    private void refreshSkin(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage("Usage: /leaderboardhavoc refreshskin <player>");
+            return;
+        }
+
+        Player target = Bukkit.getPlayerExact(args[1]);
+        if (target == null) {
+            sender.sendMessage("Player must be online to refresh their current skin.");
+            return;
+        }
+
+        SkinData skinData = SkinService.from(target, plugin.settings().elyByLookupEnabled());
+        plugin.dataStore().getOrCreate(target, skinData);
+        boolean changed = plugin.dataStore().updateIdentity(target, skinData);
+        PlayerRecord updated = plugin.dataStore().load(target.getUniqueId());
+        plugin.apiClient().refreshSkin(updated, skinData);
+
+        sender.sendMessage("Queued skin refresh for " + target.getName() + (changed ? "." : " (no local skin change detected)."));
     }
 }
