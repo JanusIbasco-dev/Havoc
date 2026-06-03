@@ -70,7 +70,7 @@ export async function ensureCollections(db: Db) {
 async function initializeCollections(db: Db) {
   const existingCollections = new Set((await db.listCollections({}, { nameOnly: true }).toArray()).map((collection) => collection.name));
 
-  for (const collectionName of ["players", "kill_events", "death_events"]) {
+  for (const collectionName of ["players", "kill_events", "death_events", "seasons"]) {
     if (!existingCollections.has(collectionName)) {
       await db.createCollection(collectionName);
     }
@@ -84,6 +84,8 @@ async function initializeCollections(db: Db) {
     db.collection("kill_events").createIndex({ killerUuid: 1, timestamp: -1 }),
     db.collection("kill_events").createIndex({ victimUuid: 1, timestamp: -1 }),
     db.collection("death_events").createIndex({ timestamp: -1 }),
-    db.collection("death_events").createIndex({ playerUuid: 1, timestamp: -1 })
+    db.collection("death_events").createIndex({ playerUuid: 1, timestamp: -1 }),
+    db.collection("seasons").createIndex({ season: 1 }, { unique: true }),
+    db.collection("seasons").createIndex({ status: 1, season: -1 })
   ]);
 }

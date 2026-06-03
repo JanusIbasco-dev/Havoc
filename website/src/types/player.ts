@@ -40,3 +40,20 @@ export type PlayerHistoryEvent = {
   opponentUsername?: string;
   pointsChanged?: number;
 };
+
+export type PlayerActivityEvent = {
+  type: "kill" | "death" | "join";
+  text: string;
+  timestamp?: string;
+  season?: number;
+  opponentUuid?: string;
+  opponentUsername?: string;
+  pointsChanged?: number;
+};
+
+export type PlayerProfile = {
+  player: LeaderboardPlayer;
+  rank: number | null;
+  kdRatio: string;
+  recentActivity: PlayerActivityEvent[];
+};

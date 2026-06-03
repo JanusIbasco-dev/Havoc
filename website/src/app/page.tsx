@@ -5,6 +5,7 @@ import { PlayerHead } from "@/components/PlayerHead";
 import { WarPodium } from "@/components/WarPodium";
 import { formatHours } from "@/lib/format";
 import { getPlayers } from "@/lib/players";
+import { getCurrentSeason, getDaysRemaining, getSeasonStatusLabel } from "@/lib/season-data";
 import { resolveSeason } from "@/lib/seasons";
 
 type HomePageProps = {
@@ -13,9 +14,12 @@ type HomePageProps = {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { season: seasonParam } = await searchParams;
-  const season = resolveSeason(seasonParam);
+  const currentSeason = await getCurrentSeason();
+  const season = resolveSeason(seasonParam || currentSeason.name);
   const players = await getPlayers(season);
   const champion = players[0] || null;
+  const seasonLabel = getSeasonStatusLabel(currentSeason);
+  const daysRemaining = getDaysRemaining(currentSeason);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -28,7 +32,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <MotionReveal>
           <section id="seasons" className="grid min-h-[360px] items-center gap-8 py-8 lg:grid-cols-[0.92fr_1.08fr]">
             <div className="max-w-2xl">
-              <p className="blocky-title text-base uppercase tracking-[0.32em] text-purple-300">SEASON 1</p>
+              <p className="blocky-title text-base uppercase tracking-[0.32em] text-purple-300">{currentSeason.name}</p>
               <h1 className="blocky-title mt-4 text-4xl leading-[0.98] text-white drop-shadow-[0_0_26px_rgba(0,0,0,0.9)] sm:text-5xl lg:text-6xl">
                 50 PLAYERS.
                 <br />
@@ -50,7 +54,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               <div className="mt-4 flex flex-wrap gap-2">
                 <HeroBadge label="50 Slots" />
                 <HeroBadge label="Teams Enabled" />
-                <HeroBadge label="Season 1" />
+                <HeroBadge label={currentSeason.name} />
                 <HeroBadge label="Champion Crown Available" />
               </div>
             </div>
@@ -61,8 +65,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <MotionReveal>
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatusCard icon="users" label="Players" value={`${players.length} / 50`} />
-            <StatusCard icon="calendar" label="Season" value="Starting Soon" danger />
-            <StatusCard icon="globe" label="World Border" value="Stable" />
+            <SeasonStatusCard season={currentSeason} label={seasonLabel} daysRemaining={daysRemaining} />
+            <StatusCard icon="globe" label="World Border" value={`${currentSeason.worldBorderSize.toLocaleString()} blocks`} detail={currentSeason.worldBorderStatus} />
             <StatusCard icon="crown" label="Champion" value={champion?.username || "Unclaimed"} danger />
           </section>
         </MotionReveal>
@@ -70,7 +74,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <section className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_460px]">
           <MotionReveal>
             <div id="leaderboard" className="space-y-5">
-              <SectionHeader eyebrow={season} title="Season 1 Leaderboard" />
+              <SectionHeader eyebrow={season} title={`${currentSeason.name} Leaderboard`} />
               <CompactLeaderboard players={players} />
             </div>
           </MotionReveal>
@@ -125,18 +129,65 @@ function HeroBadge({ label }: { label: string }) {
   );
 }
 
-function StatusCard({ icon, label, value, danger }: { icon: "users" | "calendar" | "globe" | "crown"; label: string; value: string; danger?: boolean }) {
+function StatusCard({ icon, label, value, detail, danger }: { icon: "users" | "calendar" | "globe" | "crown"; label: string; value: string; detail?: string; danger?: boolean }) {
   return (
     <article className="glass-panel neon-hover p-5 hover:shadow-[0_0_46px_rgba(139,92,246,0.34)]">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-100/42">{label}</p>
           <p className={`mt-3 text-2xl font-black ${danger ? "text-red-100" : "text-purple-100"}`}>{value}</p>
+          {detail ? <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-purple-100/44">{detail}</p> : null}
         </div>
         <StatusIcon name={icon} danger={danger} />
       </div>
     </article>
   );
+}
+
+function SeasonStatusCard({
+  season,
+  label,
+  daysRemaining
+}: {
+  season: Awaited<ReturnType<typeof getCurrentSeason>>;
+  label: string;
+  daysRemaining: number | null;
+}) {
+  const active = season.status === "active";
+
+  return (
+    <article className="glass-panel neon-hover p-5 shadow-[0_0_34px_rgba(139,92,246,0.12)] hover:shadow-[0_0_46px_rgba(139,92,246,0.34)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-100/42">Season</p>
+          <p className={`mt-3 text-2xl font-black ${active ? "text-purple-100" : "text-red-100"}`}>{label}</p>
+          <div className="mt-3 space-y-1 text-xs font-bold uppercase tracking-[0.12em] text-purple-100/48">
+            <p>{daysRemaining === null ? "Days remaining TBD" : `${daysRemaining} days remaining`}</p>
+            <p>Starts {formatSeasonDate(season.startsAt)}</p>
+            <p>Ends {formatSeasonDate(season.endsAt)}</p>
+          </div>
+        </div>
+        <StatusIcon name="calendar" danger={!active} />
+      </div>
+    </article>
+  );
+}
+
+function formatSeasonDate(value?: string) {
+  if (!value) {
+    return "TBD";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "TBD";
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(date);
 }
 
 function StatusIcon({ name, danger }: { name: "users" | "calendar" | "globe" | "crown"; danger?: boolean }) {

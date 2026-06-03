@@ -1,7 +1,7 @@
 import { WithId } from "mongodb";
 import { getDatabase } from "@/lib/mongodb";
 import { resolveSeasonNumber } from "@/lib/seasons";
-import type { LeaderboardPlayer, PlayerHistoryEvent } from "@/types/player";
+import type { LeaderboardPlayer, PlayerActivityEvent, PlayerHistoryEvent, PlayerProfile } from "@/types/player";
 
 const collectionName = "players";
 
@@ -130,6 +130,53 @@ export async function getPlayerHistory(uuid: string, season?: string | number): 
   } catch {
     return [];
   }
+}
+
+export async function getPlayerProfile(identifier: string, season?: string | number): Promise<PlayerProfile | null> {
+  const player = await getPlayerByUuidOrUsername(identifier, season);
+
+  if (!player) {
+    return null;
+  }
+
+  const [players, history] = await Promise.all([getPlayers(player.season), getPlayerHistory(player.uuid, player.season)]);
+  const rank = players.findIndex((item) => item.uuid === player.uuid) + 1;
+  const kdRatio = player.deaths === 0 ? player.kills.toFixed(2) : (player.kills / player.deaths).toFixed(2);
+
+  return {
+    player,
+    rank: rank > 0 ? rank : null,
+    kdRatio,
+    recentActivity: getRecentActivity(player, history)
+  };
+}
+
+export function getRecentActivity(player: LeaderboardPlayer, history: PlayerHistoryEvent[]): PlayerActivityEvent[] {
+  const activity: PlayerActivityEvent[] = history.map((event) => ({
+    type: event.type,
+    text: event.type === "kill"
+      ? `${player.username} killed ${event.opponentUsername || "a player"}`
+      : `${player.username} died to ${event.opponentUsername || "a player"}`,
+    timestamp: event.timestamp,
+    season: event.season,
+    opponentUuid: event.opponentUuid,
+    opponentUsername: event.opponentUsername,
+    pointsChanged: event.pointsChanged
+  }));
+
+  const firstJoin = player.firstJoinTimestamp || player.firstJoin;
+  if (firstJoin) {
+    activity.push({
+      type: "join",
+      text: `${player.username} joined the server`,
+      timestamp: firstJoin,
+      season: player.season
+    });
+  }
+
+  return activity
+    .sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())
+    .slice(0, 10);
 }
 
 export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: string; username: string }) {
