@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PlayerSkinRender } from "@/components/PlayerSkinRender";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type WarPodiumProps = {
@@ -62,11 +63,14 @@ export function WarPodium({ players }: WarPodiumProps) {
             </div>
 
             <div className="relative mt-4 flex flex-1 items-center justify-center">
-              <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} podium />
+              <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} podium />
             </div>
 
             <div className="relative mt-4 min-w-0">
-              <h3 className="truncate text-2xl font-black leading-tight text-white">{player.username}</h3>
+              <div className="flex flex-col items-center gap-2">
+                <h3 className="max-w-full truncate text-2xl font-black leading-tight text-white">{player.username}</h3>
+                <PlatformBadge platform={player.platform} compact />
+              </div>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <PodiumStat label="Points" value={player.points} primary />
                 <PodiumStat label="Kills" value={player.kills} />

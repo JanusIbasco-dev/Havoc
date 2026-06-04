@@ -252,7 +252,7 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
                 <td className="px-4 py-4 font-black text-purple-200">#{index + 1}</td>
                 <td className="px-4 py-4">
                   <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                    <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="sm" />
+                    <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="sm" />
                     {player.username}
                   </Link>
                 </td>

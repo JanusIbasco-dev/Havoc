@@ -1,4 +1,5 @@
 import { PlayerHead } from "@/components/PlayerHead";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import { formatHours } from "@/lib/format";
 import type { LeaderboardPlayer } from "@/types/player";
 import Link from "next/link";
@@ -28,10 +29,13 @@ export function LeaderboardTable({ players }: LeaderboardTableProps) {
               <td className="px-3 py-4 font-black text-[var(--accent-strong)]">#{index + 1}</td>
               <td className="px-3 py-3">
                 <Link className="flex items-center gap-3 hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                  <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} />
+                  <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} />
                   <div>
                     <div className="font-bold">{player.username}</div>
-                    <div className="max-w-[190px] truncate text-xs text-purple-100/45 sm:max-w-[300px]">{player.uuid}</div>
+                    <div className="mt-1 flex items-center gap-2">
+                      <PlatformBadge platform={player.platform} compact />
+                      <span className="max-w-[190px] truncate text-xs text-purple-100/45 sm:max-w-[300px]">{player.uuid}</span>
+                    </div>
                   </div>
                 </Link>
               </td>

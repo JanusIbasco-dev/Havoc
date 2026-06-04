@@ -1,6 +1,9 @@
 export type LeaderboardPlayer = {
   uuid: string;
   username: string;
+  platform?: "java" | "bedrock";
+  xuid?: string | null;
+  floodgateUuid?: string | null;
   skinUrl?: string | null;
   skinTextureValue?: string | null;
   skinTextureSignature?: string | null;

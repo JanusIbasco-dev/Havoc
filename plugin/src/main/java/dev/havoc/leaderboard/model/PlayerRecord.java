@@ -9,6 +9,9 @@ public final class PlayerRecord {
     private String skinSignature;
     private String skinUrl;
     private String skinProvider;
+    private String platform = "java";
+    private String xuid;
+    private String floodgateUuid;
     private long firstJoinTimestamp;
     private int points;
     private int kills;
@@ -62,6 +65,30 @@ public final class PlayerRecord {
 
     public void skinProvider(String skinProvider) {
         this.skinProvider = skinProvider;
+    }
+
+    public String platform() {
+        return platform;
+    }
+
+    public void platform(String platform) {
+        this.platform = platform;
+    }
+
+    public String xuid() {
+        return xuid;
+    }
+
+    public void xuid(String xuid) {
+        this.xuid = xuid;
+    }
+
+    public String floodgateUuid() {
+        return floodgateUuid;
+    }
+
+    public void floodgateUuid(String floodgateUuid) {
+        this.floodgateUuid = floodgateUuid;
     }
 
     public long firstJoinTimestamp() {

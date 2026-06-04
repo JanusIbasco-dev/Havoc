@@ -40,6 +40,19 @@ export function skinProviderFromPayload(payload: Record<string, unknown>) {
   return provider === "mojang" || provider === "elyby" || provider === "offline" || provider === "unknown" ? provider : undefined;
 }
 
+export function platformFromPayload(payload: Record<string, unknown>) {
+  const platform = stringFromPayload(payload, "platform");
+  return platform === "bedrock" ? "bedrock" : platform === "java" ? "java" : undefined;
+}
+
+export function xuidFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "xuid");
+}
+
+export function floodgateUuidFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "floodgateUuid");
+}
+
 function isUsableSkinUrl(value: string) {
   const trimmed = value.trim();
   return trimmed.startsWith("https://") || trimmed.startsWith("http://");

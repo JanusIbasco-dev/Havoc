@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
 import { PlayerHead } from "@/components/PlayerHead";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import { formatHours } from "@/lib/format";
 import { getPlayers } from "@/lib/players";
 import { getRankMap } from "@/lib/rankings";
@@ -33,10 +34,13 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
               className="glass-panel neon-hover rounded-3xl p-5"
             >
               <div className="flex items-center gap-4">
-                <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="md" />
+                <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="md" />
                 <div className="min-w-0">
                   <h2 className="truncate text-xl font-black text-white">{player.username}</h2>
-                  <p className="text-sm text-purple-100/45">Rank #{ranks.get(player.uuid) || "N/A"}</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <PlatformBadge platform={player.platform} compact />
+                    <p className="text-sm text-purple-100/45">Rank #{ranks.get(player.uuid) || "N/A"}</p>
+                  </div>
                 </div>
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3 text-sm">

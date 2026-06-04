@@ -1,6 +1,7 @@
 package dev.havoc.leaderboard.storage;
 
 import dev.havoc.leaderboard.LeaderboardHavocPlugin;
+import dev.havoc.leaderboard.model.PlatformData;
 import dev.havoc.leaderboard.model.PlayerRecord;
 import dev.havoc.leaderboard.model.SkinData;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,7 +27,7 @@ public final class LocalDataStore {
         this.data = YamlConfiguration.loadConfiguration(file);
     }
 
-    public synchronized PlayerRecord getOrCreate(Player player, SkinData skinData) {
+    public synchronized PlayerRecord getOrCreate(Player player, SkinData skinData, PlatformData platformData) {
         String path = playerPath(player.getUniqueId());
         long firstJoin = player.getFirstPlayed() > 0 ? player.getFirstPlayed() : System.currentTimeMillis();
         if (!data.contains(path)) {
@@ -36,6 +37,7 @@ public final class LocalDataStore {
             data.set(path + ".kills", 0);
             data.set(path + ".deaths", 0);
             applySkin(path, skinData);
+            applyPlatform(path, platformData);
             save();
         }
         return load(player.getUniqueId());
@@ -59,17 +61,22 @@ public final class LocalDataStore {
         record.skinSignature(data.getString(path + ".skin.signature"));
         record.skinUrl(data.getString(path + ".skin.url"));
         record.skinProvider(data.getString(path + ".skin.provider", "unknown"));
+        record.platform(data.getString(path + ".platform", "java"));
+        record.xuid(data.getString(path + ".xuid"));
+        record.floodgateUuid(data.getString(path + ".floodgate-uuid"));
         return record;
     }
 
-    public synchronized boolean updateIdentity(Player player, SkinData skinData) {
+    public synchronized boolean updateIdentity(Player player, SkinData skinData, PlatformData platformData) {
         String path = playerPath(player.getUniqueId());
         String oldName = data.getString(path + ".username", "");
         String oldFingerprint = skinFingerprint(path);
-        boolean changed = !oldName.equals(player.getName()) || !oldFingerprint.equals(skinData.fingerprint());
+        String oldPlatformFingerprint = platformFingerprint(path);
+        boolean changed = !oldName.equals(player.getName()) || !oldFingerprint.equals(skinData.fingerprint()) || !oldPlatformFingerprint.equals(platformFingerprint(platformData));
         if (changed) {
             data.set(path + ".username", player.getName());
             applySkin(path, skinData);
+            applyPlatform(path, platformData);
             save();
         }
         return changed;
@@ -124,12 +131,34 @@ public final class LocalDataStore {
         data.set(path + ".skin.provider", skinData.provider());
     }
 
+    private void applyPlatform(String path, PlatformData platformData) {
+        data.set(path + ".platform", platformData.platform());
+        data.set(path + ".xuid", platformData.xuid());
+        data.set(path + ".floodgate-uuid", platformData.floodgateUuid());
+    }
+
     private String skinFingerprint(String path) {
         return "%s|%s|%s|%s".formatted(
                 data.getString(path + ".skin.value", ""),
                 data.getString(path + ".skin.signature", ""),
                 data.getString(path + ".skin.url", ""),
                 data.getString(path + ".skin.provider", "")
+        );
+    }
+
+    private String platformFingerprint(String path) {
+        return "%s|%s|%s".formatted(
+                data.getString(path + ".platform", "java"),
+                data.getString(path + ".xuid", ""),
+                data.getString(path + ".floodgate-uuid", "")
+        );
+    }
+
+    private String platformFingerprint(PlatformData platformData) {
+        return "%s|%s|%s".formatted(
+                platformData.platform() == null ? "java" : platformData.platform(),
+                platformData.xuid() == null ? "" : platformData.xuid(),
+                platformData.floodgateUuid() == null ? "" : platformData.floodgateUuid()
         );
     }
 

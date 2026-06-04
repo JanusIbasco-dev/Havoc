@@ -8,13 +8,14 @@ type PlayerSkinRenderProps = {
   username: string;
   skinUrl?: string | null;
   skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
+  platform?: "java" | "bedrock";
   compact?: boolean;
   podium?: boolean;
 };
 
-export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, compact = false, podium = false }: PlayerSkinRenderProps) {
+export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platform, compact = false, podium = false }: PlayerSkinRenderProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
-  const primarySource = getPlayerBodyRenderUrl({ uuid, username, skinUrl, skinProvider });
+  const primarySource = getPlayerBodyRenderUrl({ uuid, username, skinUrl, skinProvider, platform });
   const fallbackSources = primarySource.url ? [primarySource] : [];
   const source = fallbackSources[sourceIndex] || { url: null, kind: "placeholder" as const };
   const renderFromTexture = source.url && source.kind === "texture";

@@ -6,11 +6,11 @@ type SkinSource = {
   provider: NonNullable<LeaderboardPlayer["skinProvider"]>;
 };
 
-export function getPlayerHeadUrl(player: Pick<LeaderboardPlayer, "uuid" | "username" | "skinUrl" | "skinProvider">): SkinSource {
+export function getPlayerHeadUrl(player: Pick<LeaderboardPlayer, "uuid" | "username" | "skinUrl" | "skinProvider" | "platform">): SkinSource {
   return getSkinSource(player, "head");
 }
 
-export function getPlayerBodyRenderUrl(player: Pick<LeaderboardPlayer, "uuid" | "username" | "skinUrl" | "skinProvider">): SkinSource {
+export function getPlayerBodyRenderUrl(player: Pick<LeaderboardPlayer, "uuid" | "username" | "skinUrl" | "skinProvider" | "platform">): SkinSource {
   return getSkinSource(player, "body");
 }
 
@@ -26,12 +26,16 @@ export function getSkinProviderLabel(player: Pick<LeaderboardPlayer, "skinProvid
   return null;
 }
 
-function getSkinSource(player: Pick<LeaderboardPlayer, "uuid" | "username" | "skinUrl" | "skinProvider">, type: "head" | "body"): SkinSource {
+function getSkinSource(player: Pick<LeaderboardPlayer, "uuid" | "username" | "skinUrl" | "skinProvider" | "platform">, type: "head" | "body"): SkinSource {
   const provider = player.skinProvider || "unknown";
   const storedSkinUrl = usableUrl(player.skinUrl);
 
   if (storedSkinUrl) {
     return { url: normalizeSkinUrl(storedSkinUrl), kind: "texture", provider };
+  }
+
+  if (player.platform === "bedrock") {
+    return { url: null, kind: "placeholder", provider };
   }
 
   const elySkinUrl = player.username.trim() ? `https://skinsystem.ely.by/skins/${encodeURIComponent(player.username)}.png` : null;

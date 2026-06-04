@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { unauthorized, badRequest, ok, serverError } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { numberFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload } from "@/lib/payload";
+import { floodgateUuidFromPayload, numberFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
 import { upsertPlayer } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -21,6 +21,9 @@ export async function POST(request: NextRequest) {
     await upsertPlayer({
       uuid,
       username,
+      platform: platformFromPayload(payload),
+      xuid: xuidFromPayload(payload),
+      floodgateUuid: floodgateUuidFromPayload(payload),
       skinUrl: skinUrlFromPayload(payload),
       skinTextureValue: skinTextureValueFromPayload(payload),
       skinTextureSignature: skinTextureSignatureFromPayload(payload),

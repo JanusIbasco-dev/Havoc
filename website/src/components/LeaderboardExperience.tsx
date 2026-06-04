@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PlayerHead } from "@/components/PlayerHead";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import { formatHours } from "@/lib/format";
 import { getRankMap, sortPlayers } from "@/lib/rankings";
 import type { LeaderboardPlayer } from "@/types/player";
@@ -75,8 +76,9 @@ export function LeaderboardExperience({ players }: LeaderboardExperienceProps) {
                   <td className="px-3 py-4 text-lg font-black text-purple-200">#{rank}</td>
                   <td className="px-3 py-4">
                     <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                      <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="sm" />
+                      <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="sm" />
                       <span>{player.username}</span>
+                      <PlatformBadge platform={player.platform} compact />
                     </Link>
                   </td>
                   <td className="px-3 py-4 text-right">{player.kills}</td>

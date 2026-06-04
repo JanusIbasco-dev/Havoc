@@ -2,7 +2,9 @@ package dev.havoc.leaderboard.listener;
 
 import dev.havoc.leaderboard.LeaderboardHavocPlugin;
 import dev.havoc.leaderboard.model.PlayerRecord;
+import dev.havoc.leaderboard.model.PlatformData;
 import dev.havoc.leaderboard.model.SkinData;
+import dev.havoc.leaderboard.platform.PlatformService;
 import dev.havoc.leaderboard.skin.SkinService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,10 +24,11 @@ public final class PlayerStatsListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         SkinData skinData = SkinService.from(player, plugin.settings().elyByLookupEnabled());
+        PlatformData platformData = PlatformService.from(player);
         boolean firstSeenLocally = !plugin.dataStore().hasPlayer(player.getUniqueId());
 
-        PlayerRecord record = plugin.dataStore().getOrCreate(player, skinData);
-        boolean changed = plugin.dataStore().updateIdentity(player, skinData);
+        PlayerRecord record = plugin.dataStore().getOrCreate(player, skinData, platformData);
+        boolean changed = plugin.dataStore().updateIdentity(player, skinData, platformData);
         PlayerRecord updated = plugin.dataStore().load(player.getUniqueId());
 
         if (firstSeenLocally) {

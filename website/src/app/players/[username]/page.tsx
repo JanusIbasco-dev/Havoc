@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
 import { PlayerHead } from "@/components/PlayerHead";
 import { PlayerSkinRender } from "@/components/PlayerSkinRender";
+import { PlatformBadge } from "@/components/PlatformBadge";
 import { StatBox } from "@/components/StatBox";
 import { formatDate, formatHours } from "@/lib/format";
 import { getPlayerProfile } from "@/lib/players";
@@ -41,14 +42,17 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
 
       <section className="grid gap-6 lg:grid-cols-[390px_1fr]">
         <aside className="glass-panel purple-glow overflow-hidden rounded-3xl border-purple-300/20 p-5 shadow-[0_0_60px_rgba(139,92,246,0.18)]">
-          <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} />
+          <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} />
           {skinLabel ? <p className="mt-3 text-center text-xs font-black uppercase tracking-[0.18em] text-purple-100/48">{skinLabel}</p> : null}
           <div className="mt-5">
             <div className="flex items-center gap-4">
-              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="lg" />
+              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="lg" />
               <div className="min-w-0">
                 <h1 className="truncate text-4xl font-black text-white">{player.username}</h1>
-                <p className="mt-2 text-purple-100/50">Rank {rank ? `#${rank}` : "N/A"}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <PlatformBadge platform={player.platform} />
+                  <p className="text-purple-100/50">Rank {rank ? `#${rank}` : "N/A"}</p>
+                </div>
               </div>
             </div>
             <p className="mt-5 break-all border-t border-purple-500/14 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-purple-100/42">{player.uuid}</p>
@@ -61,6 +65,9 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <ProfileFact label="Username" value={player.username} />
               <ProfileFact label="UUID" value={player.uuid} />
+              <ProfileFact label="Platform" value={player.platform === "bedrock" ? "Bedrock" : "Java"} />
+              {player.xuid ? <ProfileFact label="XUID" value={player.xuid} /> : null}
+              {player.floodgateUuid ? <ProfileFact label="Floodgate UUID" value={player.floodgateUuid} /> : null}
               <ProfileFact label="Current Rank" value={rank ? `#${rank}` : "N/A"} />
               <ProfileFact label="Season" value={`Season ${player.season}`} />
               <ProfileFact label="First Joined" value={formatDate(player.firstJoinTimestamp || player.firstJoin)} />

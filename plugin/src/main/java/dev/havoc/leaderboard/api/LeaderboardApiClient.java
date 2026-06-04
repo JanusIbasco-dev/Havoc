@@ -221,6 +221,9 @@ public final class LeaderboardApiClient {
         JsonObject payload = new JsonObject();
         payload.addProperty("uuid", record.uuid().toString());
         payload.addProperty("username", record.username());
+        payload.addProperty("platform", record.platform() == null || record.platform().isBlank() ? "java" : record.platform());
+        payload.addProperty("xuid", record.xuid());
+        payload.addProperty("floodgateUuid", record.floodgateUuid());
         return payload;
     }
 

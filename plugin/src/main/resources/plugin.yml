@@ -4,6 +4,7 @@ main: dev.havoc.leaderboard.LeaderboardHavocPlugin
 api-version: "1.21"
 author: Havoc SMP
 description: Keeps the Havoc SMP website leaderboard synchronized with PvP stats.
+softdepend: [floodgate, Geyser-Spigot]
 commands:
   leaderboardhavoc:
     description: Admin commands for Leaderboard Havoc

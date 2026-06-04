@@ -30,7 +30,7 @@ export function TopThreePlayers({ players }: TopThreePlayersProps) {
               <span className="text-2xl font-black">#{index + 1}</span>
             </div>
             <div className="mt-5 flex items-center gap-4">
-              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} size="lg" />
+              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="lg" />
               <div className="min-w-0">
                 <h3 className="truncate text-2xl font-black text-white">{player.username}</h3>
                 <p className="mt-1 text-sm opacity-80">{player.points} points</p>

@@ -8,6 +8,7 @@ type PlayerHeadProps = {
   uuid?: string;
   skinUrl?: string | null;
   skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
+  platform?: "java" | "bedrock";
   size?: "sm" | "md" | "lg";
 };
 
@@ -17,9 +18,9 @@ const sizes = {
   lg: "h-24 w-24"
 };
 
-export function PlayerHead({ username, uuid = "", skinUrl, skinProvider, size = "md" }: PlayerHeadProps) {
+export function PlayerHead({ username, uuid = "", skinUrl, skinProvider, platform, size = "md" }: PlayerHeadProps) {
   const [failed, setFailed] = useState(false);
-  const source = getPlayerHeadUrl({ uuid, username, skinUrl, skinProvider });
+  const source = getPlayerHeadUrl({ uuid, username, skinUrl, skinProvider, platform });
 
   if (source.url && source.kind === "texture" && !failed) {
     return (

@@ -8,6 +8,9 @@ const collectionName = "players";
 type PlayerDocument = {
   uuid: string;
   username: string;
+  platform?: "java" | "bedrock";
+  xuid?: string | null;
+  floodgateUuid?: string | null;
   skinUrl?: string | null;
   skinTextureValue?: string | null;
   skinTextureSignature?: string | null;
@@ -210,6 +213,11 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     setFields.skinProvider = player.skinProvider;
     setFields.skinUpdatedAt = now;
   }
+  if (player.platform === "java" || player.platform === "bedrock") {
+    setFields.platform = player.platform;
+    setFields.xuid = typeof player.xuid === "string" && player.xuid.trim() ? player.xuid.trim() : null;
+    setFields.floodgateUuid = typeof player.floodgateUuid === "string" && player.floodgateUuid.trim() ? player.floodgateUuid.trim() : null;
+  }
   if (typeof player.kills === "number") {
     setFields.kills = player.kills;
   }
@@ -265,6 +273,13 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
         ...(typeof player.skinTextureValue === "string" && player.skinTextureValue.trim() ? { skinTextureValue: player.skinTextureValue.trim(), skinUpdatedAt: now } : {}),
         ...(typeof player.skinTextureSignature === "string" && player.skinTextureSignature.trim() ? { skinTextureSignature: player.skinTextureSignature.trim(), skinUpdatedAt: now } : {}),
         ...(player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown" ? { skinProvider: player.skinProvider, skinUpdatedAt: now } : {}),
+        ...(player.platform === "java" || player.platform === "bedrock"
+          ? {
+              platform: player.platform,
+              xuid: typeof player.xuid === "string" && player.xuid.trim() ? player.xuid.trim() : null,
+              floodgateUuid: typeof player.floodgateUuid === "string" && player.floodgateUuid.trim() ? player.floodgateUuid.trim() : null
+            }
+          : {}),
         kills: player.kills ?? 0,
         deaths: player.deaths ?? 0,
         points: player.points ?? 0,
@@ -364,6 +379,9 @@ function toLeaderboardPlayer(player: WithId<PlayerDocument> | PlayerDocument): L
   return {
     uuid: player.uuid,
     username: player.username,
+    platform: player.platform ?? "java",
+    xuid: player.xuid ?? "",
+    floodgateUuid: player.floodgateUuid ?? "",
     skinUrl: player.skinUrl ?? "",
     skinTextureValue: player.skinTextureValue ?? "",
     skinTextureSignature: player.skinTextureSignature ?? "",

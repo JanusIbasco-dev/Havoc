@@ -2,7 +2,9 @@ package dev.havoc.leaderboard.command;
 
 import dev.havoc.leaderboard.LeaderboardHavocPlugin;
 import dev.havoc.leaderboard.model.PlayerRecord;
+import dev.havoc.leaderboard.model.PlatformData;
 import dev.havoc.leaderboard.model.SkinData;
+import dev.havoc.leaderboard.platform.PlatformService;
 import dev.havoc.leaderboard.skin.SkinService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -118,8 +120,9 @@ public final class LeaderboardCommand implements CommandExecutor, TabCompleter {
         }
 
         SkinData skinData = SkinService.from(target, plugin.settings().elyByLookupEnabled());
-        plugin.dataStore().getOrCreate(target, skinData);
-        boolean changed = plugin.dataStore().updateIdentity(target, skinData);
+        PlatformData platformData = PlatformService.from(target);
+        plugin.dataStore().getOrCreate(target, skinData, platformData);
+        boolean changed = plugin.dataStore().updateIdentity(target, skinData, platformData);
         PlayerRecord updated = plugin.dataStore().load(target.getUniqueId());
         plugin.apiClient().refreshSkin(updated, skinData);
 
