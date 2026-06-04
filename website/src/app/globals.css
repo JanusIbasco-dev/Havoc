@@ -193,7 +193,7 @@ a {
   height: 116px;
   object-fit: contain;
   object-position: center top;
-  transform: translateY(10px) skewX(6deg);
+  transform: translateY(4px) skewX(6deg);
   filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.38));
   image-rendering: pixelated;
 }
@@ -206,7 +206,7 @@ a {
 .top-rank-body-preview {
   width: 102px;
   height: 136px;
-  transform: translateY(14px) skewX(6deg);
+  transform: translateY(8px) skewX(6deg);
 }
 
 .profile-preview-showcase::before {
