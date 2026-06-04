@@ -11,17 +11,21 @@ type PlayerSkinRenderProps = {
   platform?: "java" | "bedrock";
   compact?: boolean;
   podium?: boolean;
+  podiumSize?: "champion" | "contender";
 };
 
-export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platform, compact = false, podium = false }: PlayerSkinRenderProps) {
+export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platform, compact = false, podium = false, podiumSize = "contender" }: PlayerSkinRenderProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const primarySource = getPlayerBodyRenderUrl({ uuid, username, skinUrl, skinProvider, platform });
   const fallbackSources = primarySource.url ? [primarySource] : [];
   const source = fallbackSources[sourceIndex] || { url: null, kind: "placeholder" as const };
   const renderFromTexture = source.url && source.kind === "texture";
   const textureUrl = renderFromTexture ? source.url : null;
+  const podiumChampion = podium && podiumSize === "champion";
   const frameClass = podium
-    ? "h-[180px] w-[140px] rounded-2xl border border-purple-300/18 bg-black/22"
+    ? podiumChampion
+      ? "h-[164px] w-full max-w-[190px]"
+      : "h-[132px] w-full max-w-[160px]"
     : compact
       ? "min-h-24 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20"
       : "min-h-72 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20";
@@ -30,16 +34,16 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
     <div className={`relative grid place-items-center overflow-hidden ${frameClass}`}>
       <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />
       {textureUrl ? (
-        <TextureBody skinUrl={textureUrl} username={username} compact={compact} podium={podium} onError={() => setSourceIndex((index) => index + 1)} />
+        <TextureBody skinUrl={textureUrl} username={username} compact={compact} podium={podium} podiumSize={podiumSize} onError={() => setSourceIndex((index) => index + 1)} />
       ) : source.url && source.kind === "render" ? (
         <img
           src={source.url}
           alt={`${username} skin render`}
           onError={() => setSourceIndex((index) => index + 1)}
-          className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${podium ? "max-h-[180px] max-w-[140px]" : compact ? "max-h-32" : "max-h-64"}`}
+          className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${podium ? (podiumChampion ? "max-h-[164px] max-w-[190px]" : "max-h-[132px] max-w-[160px]") : compact ? "max-h-32" : "max-h-64"}`}
         />
       ) : (
-        <div className="relative grid h-52 w-full max-w-56 place-items-center border border-purple-300/22 bg-black/34 p-5 text-center shadow-[0_0_34px_rgba(139,92,246,0.18)]">
+        <div className={`relative grid w-full place-items-center border border-purple-300/22 bg-black/34 p-4 text-center shadow-[0_0_34px_rgba(139,92,246,0.18)] ${podium ? "h-full max-w-full" : "h-52 max-w-56"}`}>
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-purple-100/42">Skin unavailable</p>
             <p className="mt-2 text-3xl font-black text-purple-100">{username.slice(0, 2).toUpperCase()}</p>
@@ -50,8 +54,22 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
   );
 }
 
-function TextureBody({ skinUrl, username, compact, podium, onError }: { skinUrl: string; username: string; compact: boolean; podium: boolean; onError: () => void }) {
-  const scale = podium ? 5 : compact ? 3 : 7;
+function TextureBody({
+  skinUrl,
+  username,
+  compact,
+  podium,
+  podiumSize,
+  onError
+}: {
+  skinUrl: string;
+  username: string;
+  compact: boolean;
+  podium: boolean;
+  podiumSize: "champion" | "contender";
+  onError: () => void;
+}) {
+  const scale = podium ? (podiumSize === "champion" ? 5 : 4) : compact ? 3 : 7;
 
   return (
     <div className="relative flex flex-col items-center drop-shadow-[0_0_34px_rgba(139,92,246,0.45)]" style={{ width: 16 * scale, height: 32 * scale }}>
