@@ -27,7 +27,7 @@ const podiumStyles = [
     order: "md:order-1",
     width: "max-w-[315px]",
     skinSize: "contender" as const,
-    skinLift: "md:translate-y-4"
+    skinLift: "md:-translate-y-3"
   },
   {
     rank: "#3",
@@ -37,7 +37,7 @@ const podiumStyles = [
     order: "md:order-3",
     width: "max-w-[315px]",
     skinSize: "contender" as const,
-    skinLift: "md:translate-y-7"
+    skinLift: ""
   }
 ];
 
@@ -60,7 +60,7 @@ export function WarPodium({ players }: WarPodiumProps) {
             href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
             className={`group flex w-full min-w-0 flex-col items-center text-center transition duration-200 hover:-translate-y-1 ${style.width} ${style.order}`}
           >
-            <div className={`relative z-10 flex justify-center ${style.skinLift}`}>
+            <div className={`relative z-10 flex justify-center overflow-visible ${style.skinLift}`}>
               <PlayerSkinRender
                 uuid={player.uuid}
                 username={player.username}

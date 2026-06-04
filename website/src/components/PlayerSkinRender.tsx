@@ -25,7 +25,7 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
   const frameClass = podium
     ? podiumChampion
       ? "h-[210px] w-[170px]"
-      : "h-[170px] w-[135px]"
+      : "h-[200px] w-[150px]"
     : compact
       ? "min-h-24 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20"
       : "min-h-72 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20";
