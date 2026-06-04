@@ -22,7 +22,6 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
       <section>
         <p className="text-sm font-bold uppercase tracking-[0.28em] text-purple-300">{season}</p>
         <h1 className="mt-3 text-5xl font-black text-white">Players</h1>
-        <p className="mt-3 max-w-2xl text-purple-100/58">Browse every registered player synced from the server.</p>
       </section>
 
       {players.length > 0 ? (
