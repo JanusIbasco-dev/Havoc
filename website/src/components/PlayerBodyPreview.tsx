@@ -1,4 +1,4 @@
-import { getPlayerBodyPreviewUrl } from "@/lib/skin";
+import { getPlayerBodyPreviewDebug } from "@/lib/skin";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type PlayerBodyPreviewPlayer = Pick<
@@ -13,7 +13,14 @@ type PlayerBodyPreviewProps = {
 };
 
 export function PlayerBodyPreview({ player, size = 260, className = "" }: PlayerBodyPreviewProps) {
-  const src = getPlayerBodyPreviewUrl(player, size);
+  const debug = getPlayerBodyPreviewDebug(player, size);
 
-  return <img src={src} alt={`${player.username} Minecraft player preview`} className={className} width={size} height={size} />;
+  console.info("[PlayerBodyPreview]", {
+    username: debug.username,
+    skinTextureUrl: debug.skinTextureUrl,
+    renderUrl: debug.renderUrl,
+    renderSource: debug.renderSource
+  });
+
+  return <img src={debug.renderUrl} alt={`${player.username} Minecraft player preview`} className={className} width={size} height={size} />;
 }

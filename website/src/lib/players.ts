@@ -15,6 +15,7 @@ type PlayerDocument = {
   bedrockXuid?: string | null;
   xuid?: string | null;
   floodgateUuid?: string | null;
+  skinTextureUrl?: string | null;
   skinUrl?: string | null;
   skinTexture?: string | null;
   skinTextureValue?: string | null;
@@ -205,6 +206,11 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     updatedAt: now
   };
 
+  if (typeof player.skinTextureUrl === "string" && player.skinTextureUrl.trim()) {
+    setFields.skinTextureUrl = player.skinTextureUrl.trim();
+    setFields.skinUpdatedAt = now;
+    setFields.lastSkinFetchAt = now;
+  }
   if (typeof player.skinUrl === "string" && player.skinUrl.trim()) {
     setFields.skinUrl = player.skinUrl.trim();
     setFields.skinUpdatedAt = now;
@@ -296,6 +302,7 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
     {
       $set: {
         username: player.username,
+        ...(typeof player.skinTextureUrl === "string" && player.skinTextureUrl.trim() ? { skinTextureUrl: player.skinTextureUrl.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
         ...(typeof player.skinUrl === "string" && player.skinUrl.trim() ? { skinUrl: player.skinUrl.trim(), skinUpdatedAt: now } : {}),
         ...(typeof player.skinTexture === "string" && player.skinTexture.trim() ? { skinTexture: player.skinTexture.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
         ...(typeof player.skinTextureValue === "string" && player.skinTextureValue.trim() ? { skinTextureValue: player.skinTextureValue.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
@@ -471,6 +478,7 @@ function toLeaderboardPlayer(player: WithId<PlayerDocument> | PlayerDocument): L
     bedrockXuid: player.bedrockXuid ?? player.xuid ?? "",
     xuid: player.xuid ?? "",
     floodgateUuid: player.floodgateUuid ?? "",
+    skinTextureUrl: player.skinTextureUrl ?? "",
     skinUrl: player.skinUrl ?? "",
     skinTexture: player.skinTexture ?? "",
     skinTextureValue: player.skinTextureValue ?? "",

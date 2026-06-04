@@ -12,6 +12,13 @@ export type SkinSource = {
   model: "classic" | "slim";
 };
 
+export type PlayerBodyPreviewDebug = {
+  username: string;
+  skinTextureUrl: string | null;
+  renderUrl: string;
+  renderSource: string;
+};
+
 const defaultSteveSkin = "https://mc-heads.net/skin/MHF_Steve";
 const defaultAlexSkin = "https://mc-heads.net/skin/MHF_Alex";
 
@@ -27,9 +34,21 @@ export function getPlayerHeadUrl(player: SkinResolverPlayer, size = 96) {
 }
 
 export function getPlayerBodyPreviewUrl(player: SkinResolverPlayer, size = 260) {
-  const identifier = getJavaUuid(player) || getFloodgateUuid(player) || player.username || defaultHeadIdentifier(player);
+  return getPlayerBodyPreviewDebug(player, size).renderUrl;
+}
 
-  return `https://mc-heads.net/body/${encodeURIComponent(identifier)}/${clampHeadSize(size)}.png`;
+export function getPlayerBodyPreviewDebug(player: SkinResolverPlayer, size = 260): PlayerBodyPreviewDebug {
+  const rawSource = getPlayerBodyRenderSource(player);
+  const renderIdentifier = rawSource ? renderIdentifierFromRawSkinSource(rawSource) : null;
+  const fallbackIdentifier = defaultHeadIdentifier(player);
+  const identifier = renderIdentifier || fallbackIdentifier;
+
+  return {
+    username: player.username,
+    skinTextureUrl: player.skinTextureUrl || null,
+    renderUrl: `https://mc-heads.net/body/${encodeURIComponent(identifier)}/${clampHeadSize(size)}.png`,
+    renderSource: rawSource || `default:${fallbackIdentifier}`
+  };
 }
 
 export function getPlayerSkinSource(player: SkinResolverPlayer): SkinSource {
@@ -125,6 +144,41 @@ function getPlayerHeadSkinSource(player: SkinResolverPlayer) {
   }
 
   return `https://mc-heads.net/skin/${encodeURIComponent(player.username || defaultHeadIdentifier(player))}`;
+}
+
+function getPlayerBodyRenderSource(player: SkinResolverPlayer) {
+  return rawSkinUrl(player.skinTextureUrl) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureValue)) || rawSkinUrl(player.skinTexture) || rawSkinUrl(player.skinUrl);
+}
+
+function renderIdentifierFromRawSkinSource(value: string) {
+  if (value.startsWith("data:image/png;base64,")) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(value);
+    const path = parsed.pathname;
+    const host = parsed.hostname.toLowerCase();
+
+    if (host === "textures.minecraft.net") {
+      const match = path.match(/^\/texture\/([0-9a-fA-F]+)$/);
+      return match?.[1] || null;
+    }
+
+    if (host === "crafatar.com") {
+      const match = path.match(/^\/skins\/([0-9a-fA-F-]+)$/);
+      return match?.[1]?.replace(/-/g, "") || null;
+    }
+
+    if (host === "mc-heads.net") {
+      const match = path.match(/^\/skin\/([^/]+)$/);
+      return match?.[1] ? decodeURIComponent(match[1]) : null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 function rawSkinUrl(value?: string | null) {

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { badRequest, ok, serverError, unauthorized } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { bedrockXuidFromPayload, floodgateUuidFromPayload, javaUuidFromPayload, minecraftTypeFromPayload, numberFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
+import { bedrockXuidFromPayload, floodgateUuidFromPayload, javaUuidFromPayload, minecraftTypeFromPayload, numberFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureFromPayload, skinTextureSignatureFromPayload, skinTextureUrlFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
 import { setPlayerStats } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
         bedrockXuid: bedrockXuidFromPayload(player),
         xuid: xuidFromPayload(player),
         floodgateUuid: floodgateUuidFromPayload(player),
+        skinTextureUrl: skinTextureUrlFromPayload(player),
         skinUrl: skinUrlFromPayload(player),
         skinTexture: skinTextureFromPayload(player),
         skinTextureValue: skinTextureValueFromPayload(player),

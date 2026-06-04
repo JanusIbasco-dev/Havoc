@@ -29,6 +29,11 @@ export function skinUrlFromPayload(payload: Record<string, unknown>) {
   return null;
 }
 
+export function skinTextureUrlFromPayload(payload: Record<string, unknown>) {
+  const directTextureUrl = stringFromPayload(payload, "skinTextureUrl") || stringFromPayload(payload, "textureUrl") || stringFromNestedSkin(payload, "textureUrl");
+  return directTextureUrl && isUsableSkinUrl(directTextureUrl) ? normalizeSkinUrl(directTextureUrl) : null;
+}
+
 export function skinTextureValueFromPayload(payload: Record<string, unknown>) {
   return stringFromPayload(payload, "skinTextureValue") || stringFromNestedSkin(payload, "textureValue");
 }
