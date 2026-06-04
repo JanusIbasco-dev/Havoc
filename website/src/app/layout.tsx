@@ -5,7 +5,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Havoc SMP Leaderboard",
-  description: "PvP leaderboard for Havoc SMP."
+  description: "PvP leaderboard for Havoc SMP.",
+  icons: {
+    icon: "/webicon.png",
+    shortcut: "/webicon.png",
+    apple: "/webicon.png"
+  }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
