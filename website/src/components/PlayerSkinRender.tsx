@@ -18,13 +18,11 @@ type PlayerSkinRenderProps = {
 export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platform, compact = false, podium = false, podiumSize = "contender", mini = false }: PlayerSkinRenderProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const primarySource = getPlayerBodyRenderUrl({ uuid, username, skinUrl, skinProvider, platform });
-  const fallbackSources = primarySource.url ? [primarySource] : [];
+  const fallbackSources = primarySource.url ? [primarySource, { url: "https://mc-heads.net/body/MHF_Steve/right", kind: "render" as const, provider: "unknown" as const }] : [];
   const source = fallbackSources[sourceIndex] || { url: null, kind: "placeholder" as const };
-  const renderFromTexture = source.url && source.kind === "texture";
-  const textureUrl = renderFromTexture ? source.url : null;
   const podiumChampion = podium && podiumSize === "champion";
   const frameClass = mini
-    ? "h-16 w-12"
+    ? "h-16 w-14"
     : podium
     ? podiumChampion
       ? "h-[132px] w-[112px]"
@@ -32,18 +30,25 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
     : compact
       ? "min-h-24 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20"
       : "min-h-72 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20";
+  const imageClass = mini
+    ? "h-[92px] w-[92px] translate-y-2 scale-[1.38]"
+    : podium
+      ? podiumChampion
+        ? "h-[172px] w-[172px] translate-y-5 scale-[1.34]"
+        : "h-[142px] w-[142px] translate-y-4 scale-[1.34]"
+      : compact
+        ? "h-[152px] w-[152px] translate-y-6 scale-[1.28]"
+        : "h-[330px] w-[330px] translate-y-12 scale-[1.22]";
 
   return (
     <div className={`relative grid place-items-center overflow-hidden ${frameClass}`}>
       {podium || mini ? <div className="absolute bottom-1 h-5 w-20 rounded-full bg-purple-950/38 blur-md" /> : <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />}
-      {textureUrl ? (
-        <TextureBody skinUrl={textureUrl} username={username} compact={compact} podium={podium} podiumSize={podiumSize} mini={mini} onError={() => setSourceIndex((index) => index + 1)} />
-      ) : source.url && source.kind === "render" ? (
+      {source.url && source.kind === "render" ? (
         <img
           src={source.url}
-          alt={`${username} skin render`}
+          alt={`${username} Minecraft character render`}
           onError={() => setSourceIndex((index) => index + 1)}
-          className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${podium || mini ? "h-full w-full" : compact ? "max-h-32" : "max-h-64"}`}
+          className={`relative max-w-none object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] [image-rendering:pixelated] ${imageClass}`}
         />
       ) : (
         <div className={`relative grid w-full place-items-center p-4 text-center ${podium || mini ? "h-full max-w-full rounded-lg border border-purple-300/18 bg-black/18" : "h-52 max-w-56 border border-purple-300/22 bg-black/34 shadow-[0_0_34px_rgba(139,92,246,0.18)]"}`}>
@@ -53,94 +58,6 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function TextureBody({
-  skinUrl,
-  username,
-  compact,
-  podium,
-  podiumSize,
-  mini,
-  onError
-}: {
-  skinUrl: string;
-  username: string;
-  compact: boolean;
-  podium: boolean;
-  podiumSize: "champion" | "contender";
-  mini: boolean;
-  onError: () => void;
-}) {
-  const scale = mini ? 2 : podium ? (podiumSize === "champion" ? 4 : 3) : compact ? 3 : 7;
-
-  return (
-    <div className="relative flex flex-col items-center drop-shadow-[0_0_34px_rgba(139,92,246,0.45)]" style={{ width: 16 * scale, height: 32 * scale }}>
-      <img src={skinUrl} alt="" className="hidden" onError={onError} />
-      <SkinPart skinUrl={skinUrl} label={`${username} head`} x={8} y={8} overlayX={40} overlayY={8} w={8} h={8} scale={scale} className="z-10" />
-      <div className="flex">
-        <SkinPart skinUrl={skinUrl} label={`${username} right arm`} x={44} y={20} overlayX={44} overlayY={36} w={4} h={12} scale={scale} />
-        <div className="flex flex-col">
-          <SkinPart skinUrl={skinUrl} label={`${username} torso`} x={20} y={20} overlayX={20} overlayY={36} w={8} h={12} scale={scale} />
-          <div className="flex">
-            <SkinPart skinUrl={skinUrl} label={`${username} right leg`} x={4} y={20} overlayX={4} overlayY={36} w={4} h={12} scale={scale} />
-            <SkinPart skinUrl={skinUrl} label={`${username} left leg`} x={20} y={52} overlayX={4} overlayY={52} w={4} h={12} scale={scale} />
-          </div>
-        </div>
-        <SkinPart skinUrl={skinUrl} label={`${username} left arm`} x={36} y={52} overlayX={52} overlayY={52} w={4} h={12} scale={scale} />
-      </div>
-    </div>
-  );
-}
-
-function SkinPart({
-  skinUrl,
-  label,
-  x,
-  y,
-  overlayX,
-  overlayY,
-  w,
-  h,
-  scale,
-  className = ""
-}: {
-  skinUrl: string;
-  label: string;
-  x: number;
-  y: number;
-  overlayX?: number;
-  overlayY?: number;
-  w: number;
-  h: number;
-  scale: number;
-  className?: string;
-}) {
-  return (
-    <div
-      role="img"
-      aria-label={label}
-      className={`relative shrink-0 bg-no-repeat [image-rendering:pixelated] ${className}`}
-      style={{
-        width: w * scale,
-        height: h * scale,
-        backgroundImage: `url("${skinUrl}")`,
-        backgroundSize: `${64 * scale}px ${64 * scale}px`,
-        backgroundPosition: `-${x * scale}px -${y * scale}px`
-      }}
-    >
-      {typeof overlayX === "number" && typeof overlayY === "number" ? (
-        <div
-          className="absolute inset-0 bg-no-repeat [image-rendering:pixelated]"
-          style={{
-            backgroundImage: `url("${skinUrl}")`,
-            backgroundSize: `${64 * scale}px ${64 * scale}px`,
-            backgroundPosition: `-${overlayX * scale}px -${overlayY * scale}px`
-          }}
-        />
-      ) : null}
     </div>
   );
 }
