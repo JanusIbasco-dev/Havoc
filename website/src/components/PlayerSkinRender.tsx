@@ -24,15 +24,15 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
   const podiumChampion = podium && podiumSize === "champion";
   const frameClass = podium
     ? podiumChampion
-      ? "h-[210px] w-[170px]"
-      : "h-[200px] w-[150px]"
+      ? "h-[160px] w-[150px]"
+      : "h-[130px] w-[125px]"
     : compact
       ? "min-h-24 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20"
       : "min-h-72 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20";
 
   return (
-    <div className={`relative grid place-items-center ${podium ? "overflow-visible" : "overflow-hidden"} ${frameClass}`}>
-      {podium ? <div className="absolute bottom-0 h-5 w-24 rounded-full bg-purple-950/50 blur-md" /> : <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />}
+    <div className={`relative grid place-items-center overflow-hidden ${frameClass}`}>
+      {podium ? <div className="absolute bottom-1 h-5 w-24 rounded-full bg-purple-950/38 blur-md" /> : <div className={`absolute inset-x-8 rounded-full bg-purple-500/20 blur-3xl ${compact ? "top-8 h-20" : "top-12 h-32"}`} />}
       {textureUrl ? (
         <TextureBody skinUrl={textureUrl} username={username} compact={compact} podium={podium} podiumSize={podiumSize} onError={() => setSourceIndex((index) => index + 1)} />
       ) : source.url && source.kind === "render" ? (
@@ -43,7 +43,7 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
           className={`relative object-contain drop-shadow-[0_0_34px_rgba(139,92,246,0.45)] ${podium ? "h-full w-full" : compact ? "max-h-32" : "max-h-64"}`}
         />
       ) : (
-        <div className={`relative grid w-full place-items-center p-4 text-center ${podium ? "h-full max-w-full border border-purple-300/18 bg-black/10" : "h-52 max-w-56 border border-purple-300/22 bg-black/34 shadow-[0_0_34px_rgba(139,92,246,0.18)]"}`}>
+        <div className={`relative grid w-full place-items-center p-4 text-center ${podium ? "h-full max-w-full rounded-lg border border-purple-300/18 bg-black/18" : "h-52 max-w-56 border border-purple-300/22 bg-black/34 shadow-[0_0_34px_rgba(139,92,246,0.18)]"}`}>
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-purple-100/42">Skin unavailable</p>
             <p className="mt-2 text-3xl font-black text-purple-100">{username.slice(0, 2).toUpperCase()}</p>
@@ -69,7 +69,7 @@ function TextureBody({
   podiumSize: "champion" | "contender";
   onError: () => void;
 }) {
-  const scale = podium ? (podiumSize === "champion" ? 6 : 5) : compact ? 3 : 7;
+  const scale = podium ? (podiumSize === "champion" ? 5 : 4) : compact ? 3 : 7;
 
   return (
     <div className="relative flex flex-col items-center drop-shadow-[0_0_34px_rgba(139,92,246,0.45)]" style={{ width: 16 * scale, height: 32 * scale }}>
