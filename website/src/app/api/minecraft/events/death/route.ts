@@ -20,16 +20,22 @@ export async function POST(request: NextRequest) {
 
     const season = seasonFromPayload(payload);
     const timestamp = typeof payload.timestamp === "string" ? payload.timestamp : new Date().toISOString();
+    const eventId = requireString(payload, "eventId") || legacyDeathEventId(uuid, season, timestamp);
     const player = await recordDeathAndUpdatePlayer({
       playerUuid: uuid,
       playerUsername: username,
+      eventId,
       pointsDeducted: numberFromPayload(payload, "pointsDeducted", 13),
       season,
       timestamp
     });
 
-    return ok({ message: "Death event recorded.", player });
+    return ok({ message: player.duplicate ? "Duplicate death event ignored." : "Death event recorded.", duplicate: player.duplicate, eventId, player: player.player });
   } catch (error) {
     return serverError(error instanceof Error ? error.message : "Unable to record death event.");
   }
+}
+
+function legacyDeathEventId(uuid: string, season: number, timestamp: string) {
+  return ["legacy-death", uuid, season, timestamp].join(":");
 }

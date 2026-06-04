@@ -298,6 +298,7 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
 }
 
 export async function recordKillAndUpdatePlayers(event: {
+  eventId: string;
   killerUuid: string;
   killerUsername: string;
   victimUuid: string;
@@ -305,7 +306,7 @@ export async function recordKillAndUpdatePlayers(event: {
   season: number;
   timestamp: string;
   pointsAwarded?: number;
-}) {
+}): Promise<{ player: LeaderboardPlayer | null; duplicate: boolean }> {
   const db = await getDatabase();
   const pointsAwarded = event.pointsAwarded ?? 15;
   const now = new Date().toISOString();
@@ -315,63 +316,116 @@ export async function recordKillAndUpdatePlayers(event: {
     upsertPlayer({ uuid: event.victimUuid, username: event.victimUsername, season: event.season })
   ]);
 
-  const killerUpdate = await db.collection<PlayerDocument>(collectionName).findOneAndUpdate(
-    { uuid: event.killerUuid, season: event.season },
-    {
-      $inc: { kills: 1, points: pointsAwarded },
-      $set: { username: event.killerUsername, lastSeen: now, updatedAt: now }
-    },
-    { returnDocument: "after", projection: { _id: 0 } }
-  );
+  const existingEvent = await db.collection("kill_events").findOne({ eventId: event.eventId }, { projection: { _id: 0 } });
+  if (existingEvent) {
+    console.log(`[LeaderboardHavoc] duplicate kill ignored eventId=${event.eventId}`);
+    const existingKiller = await db.collection<PlayerDocument>(collectionName).findOne({ uuid: event.killerUuid, season: event.season }, { projection: { _id: 0 } });
+    return { player: existingKiller ? toLeaderboardPlayer(existingKiller) : null, duplicate: true };
+  }
 
-  await db.collection("kill_events").insertOne({
-    killerUuid: event.killerUuid,
-    killerUsername: event.killerUsername,
-    victimUuid: event.victimUuid,
-    victimUsername: event.victimUsername,
-    pointsAwarded,
-    killerUpdatedTotalPoints: killerUpdate?.points ?? pointsAwarded,
-    season: event.season,
-    timestamp: event.timestamp,
-    receivedAt: now
-  });
+  try {
+    await db.collection("kill_events").insertOne({
+      eventId: event.eventId,
+      killerUuid: event.killerUuid,
+      killerUsername: event.killerUsername,
+      victimUuid: event.victimUuid,
+      victimUsername: event.victimUsername,
+      pointsAwarded,
+      season: event.season,
+      timestamp: event.timestamp,
+      receivedAt: now
+    });
 
-  return killerUpdate ? toLeaderboardPlayer(killerUpdate) : null;
+    const killerUpdate = await db.collection<PlayerDocument>(collectionName).findOneAndUpdate(
+      { uuid: event.killerUuid, season: event.season },
+      {
+        $inc: { kills: 1, points: pointsAwarded },
+        $set: { username: event.killerUsername, lastSeen: now, updatedAt: now }
+      },
+      { returnDocument: "after", projection: { _id: 0 } }
+    );
+
+    await db.collection("kill_events").updateOne({ eventId: event.eventId }, {
+      $set: {
+        killerUpdatedTotalPoints: killerUpdate?.points ?? pointsAwarded,
+        processedAt: new Date().toISOString()
+      }
+    });
+
+    console.log(`[LeaderboardHavoc] processed kill eventId=${event.eventId} killer=${event.killerUsername} +1 kill +${pointsAwarded} points victim=${event.victimUsername}`);
+    return { player: killerUpdate ? toLeaderboardPlayer(killerUpdate) : null, duplicate: false };
+  } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      console.log(`[LeaderboardHavoc] duplicate kill ignored eventId=${event.eventId}`);
+      const existingKiller = await db.collection<PlayerDocument>(collectionName).findOne({ uuid: event.killerUuid, season: event.season }, { projection: { _id: 0 } });
+      return { player: existingKiller ? toLeaderboardPlayer(existingKiller) : null, duplicate: true };
+    }
+    throw error;
+  }
 }
 
 export async function recordDeathAndUpdatePlayer(event: {
+  eventId: string;
   playerUuid: string;
   playerUsername: string;
   season: number;
   timestamp: string;
   pointsDeducted?: number;
-}) {
+}): Promise<{ player: LeaderboardPlayer | null; duplicate: boolean }> {
   const db = await getDatabase();
   const pointsDeducted = event.pointsDeducted ?? 13;
   const now = new Date().toISOString();
 
   await upsertPlayer({ uuid: event.playerUuid, username: event.playerUsername, season: event.season });
 
-  const playerUpdate = await db.collection<PlayerDocument>(collectionName).findOneAndUpdate(
-    { uuid: event.playerUuid, season: event.season },
-    {
-      $inc: { deaths: 1, points: -pointsDeducted },
-      $set: { username: event.playerUsername, lastSeen: now, updatedAt: now }
-    },
-    { returnDocument: "after", projection: { _id: 0 } }
-  );
+  const existingEvent = await db.collection("death_events").findOne({ eventId: event.eventId }, { projection: { _id: 0 } });
+  if (existingEvent) {
+    console.log(`[LeaderboardHavoc] duplicate death ignored eventId=${event.eventId}`);
+    const existingPlayer = await db.collection<PlayerDocument>(collectionName).findOne({ uuid: event.playerUuid, season: event.season }, { projection: { _id: 0 } });
+    return { player: existingPlayer ? toLeaderboardPlayer(existingPlayer) : null, duplicate: true };
+  }
 
-  await db.collection("death_events").insertOne({
-    playerUuid: event.playerUuid,
-    playerUsername: event.playerUsername,
-    pointsDeducted,
-    updatedTotalPoints: playerUpdate?.points ?? -pointsDeducted,
-    season: event.season,
-    timestamp: event.timestamp,
-    receivedAt: now
-  });
+  try {
+    await db.collection("death_events").insertOne({
+      eventId: event.eventId,
+      playerUuid: event.playerUuid,
+      playerUsername: event.playerUsername,
+      pointsDeducted,
+      season: event.season,
+      timestamp: event.timestamp,
+      receivedAt: now
+    });
 
-  return playerUpdate ? toLeaderboardPlayer(playerUpdate) : null;
+    const playerUpdate = await db.collection<PlayerDocument>(collectionName).findOneAndUpdate(
+      { uuid: event.playerUuid, season: event.season },
+      {
+        $inc: { deaths: 1, points: -pointsDeducted },
+        $set: { username: event.playerUsername, lastSeen: now, updatedAt: now }
+      },
+      { returnDocument: "after", projection: { _id: 0 } }
+    );
+
+    await db.collection("death_events").updateOne({ eventId: event.eventId }, {
+      $set: {
+        updatedTotalPoints: playerUpdate?.points ?? -pointsDeducted,
+        processedAt: new Date().toISOString()
+      }
+    });
+
+    console.log(`[LeaderboardHavoc] processed death eventId=${event.eventId} player=${event.playerUsername} +1 death -${pointsDeducted} points`);
+    return { player: playerUpdate ? toLeaderboardPlayer(playerUpdate) : null, duplicate: false };
+  } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      console.log(`[LeaderboardHavoc] duplicate death ignored eventId=${event.eventId}`);
+      const existingPlayer = await db.collection<PlayerDocument>(collectionName).findOne({ uuid: event.playerUuid, season: event.season }, { projection: { _id: 0 } });
+      return { player: existingPlayer ? toLeaderboardPlayer(existingPlayer) : null, duplicate: true };
+    }
+    throw error;
+  }
+}
+
+function isDuplicateKeyError(error: unknown) {
+  return typeof error === "object" && error !== null && "code" in error && (error as { code?: unknown }).code === 11000;
 }
 
 function toLeaderboardPlayer(player: WithId<PlayerDocument> | PlayerDocument): LeaderboardPlayer {

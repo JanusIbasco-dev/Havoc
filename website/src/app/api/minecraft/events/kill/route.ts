@@ -22,18 +22,24 @@ export async function POST(request: NextRequest) {
 
     const season = seasonFromPayload(payload);
     const timestamp = typeof payload.timestamp === "string" ? payload.timestamp : new Date().toISOString();
+    const eventId = requireString(payload, "eventId") || legacyKillEventId(killerUuid, victimUuid, season, timestamp);
     const killer = await recordKillAndUpdatePlayers({
       killerUuid,
       killerUsername,
       victimUuid,
       victimUsername,
+      eventId,
       pointsAwarded: numberFromPayload(payload, "pointsAwarded", 15),
       season,
       timestamp
     });
 
-    return ok({ message: "Kill event recorded.", killer });
+    return ok({ message: killer.duplicate ? "Duplicate kill event ignored." : "Kill event recorded.", duplicate: killer.duplicate, eventId, killer: killer.player });
   } catch (error) {
     return serverError(error instanceof Error ? error.message : "Unable to record kill event.");
   }
+}
+
+function legacyKillEventId(killerUuid: string, victimUuid: string, season: number, timestamp: string) {
+  return ["legacy-kill", killerUuid, victimUuid, season, timestamp].join(":");
 }

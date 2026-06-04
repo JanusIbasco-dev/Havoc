@@ -61,8 +61,9 @@ public final class LeaderboardApiClient {
         sendAsync("refresh-skin", payload);
     }
 
-    public void sendKillEvent(PlayerRecord killer, PlayerRecord victim, int pointsAwarded, long timestamp) {
+    public void sendKillEvent(PlayerRecord killer, PlayerRecord victim, int pointsAwarded, long timestamp, String eventId) {
         JsonObject payload = new JsonObject();
+        payload.addProperty("eventId", eventId);
         payload.addProperty("killerUuid", killer.uuid().toString());
         payload.addProperty("killerUsername", killer.username());
         payload.addProperty("victimUuid", victim.uuid().toString());
@@ -73,8 +74,9 @@ public final class LeaderboardApiClient {
         sendAsync("kill-event", payload);
     }
 
-    public void sendDeathEvent(PlayerRecord player, int pointsDeducted, long timestamp) {
+    public void sendDeathEvent(PlayerRecord player, int pointsDeducted, long timestamp, String eventId) {
         JsonObject payload = basePlayerPayload(player);
+        payload.addProperty("eventId", eventId);
         payload.addProperty("pointsDeducted", pointsDeducted);
         payload.addProperty("updatedTotalPoints", player.points());
         payload.addProperty("timestamp", Instant.ofEpochMilli(timestamp).toString());

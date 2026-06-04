@@ -81,9 +81,11 @@ async function initializeCollections(db: Db) {
     db.collection("players").createIndex({ username: 1, season: 1 }),
     db.collection("players").createIndex({ season: 1, points: -1, kills: -1, deaths: 1 }),
     db.collection("kill_events").createIndex({ timestamp: -1 }),
+    db.collection("kill_events").createIndex({ eventId: 1 }, { unique: true, sparse: true }),
     db.collection("kill_events").createIndex({ killerUuid: 1, timestamp: -1 }),
     db.collection("kill_events").createIndex({ victimUuid: 1, timestamp: -1 }),
     db.collection("death_events").createIndex({ timestamp: -1 }),
+    db.collection("death_events").createIndex({ eventId: 1 }, { unique: true, sparse: true }),
     db.collection("death_events").createIndex({ playerUuid: 1, timestamp: -1 }),
     db.collection("seasons").createIndex({ season: 1 }, { unique: true }),
     db.collection("seasons").createIndex({ status: 1, season: -1 })

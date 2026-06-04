@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { unauthorized, badRequest, ok, serverError } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { floodgateUuidFromPayload, numberFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
+import { floodgateUuidFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureSignatureFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
 import { upsertPlayer } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -28,9 +28,6 @@ export async function POST(request: NextRequest) {
       skinTextureValue: skinTextureValueFromPayload(payload),
       skinTextureSignature: skinTextureSignatureFromPayload(payload),
       skinProvider: skinProviderFromPayload(payload),
-      kills: numberFromPayload(payload, "kills"),
-      deaths: numberFromPayload(payload, "deaths"),
-      points: numberFromPayload(payload, "points"),
       playtimeHours: playtimeFromPayload(payload),
       season: seasonFromPayload(payload),
       firstJoin: typeof payload.firstJoin === "string" ? payload.firstJoin : typeof payload.firstJoinTimestamp === "string" ? payload.firstJoinTimestamp : undefined
