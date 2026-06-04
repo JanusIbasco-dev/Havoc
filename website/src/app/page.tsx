@@ -71,7 +71,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </section>
         </MotionReveal>
 
-        <section id="leaderboard" className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)] lg:items-start">
+        <section id="leaderboard" className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)] lg:items-start">
           <MotionReveal className="contents lg:col-start-1 lg:row-start-1 lg:block lg:space-y-5">
             <div className="order-1">
               <SectionHeader eyebrow={season} title={`${currentSeason.name} Leaderboard`} />
@@ -250,20 +250,32 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
         <tbody>
           {players.length > 0 ? (
             players.map((player, index) => (
-              <tr key={`${player.uuid}-${player.season}`} className="border-t border-purple-500/12 transition hover:bg-purple-500/[0.06]">
-                <td className="px-4 py-4 font-black text-purple-200">#{index + 1}</td>
-                <td className="px-4 py-4">
-                  <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                    <span className="relative -my-3 grid h-16 w-12 shrink-0 place-items-end overflow-visible">
-                      <PlayerSkinRender username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} mini />
-                    </span>
-                    <span className="min-w-0 truncate">{player.username}</span>
+              <tr key={`${player.uuid}-${player.season}`} className="h-[76px] border-t border-purple-500/12 align-middle transition hover:bg-purple-500/[0.06]">
+                <td className="px-4 py-0 align-middle font-black text-purple-200">#{index + 1}</td>
+                <td className="px-4 py-0 align-middle">
+                  <Link className="flex h-[76px] items-center gap-[14px] font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
+                    <PlayerSkinRender
+                      username={player.username}
+                      uuid={player.uuid}
+                      skinUrl={player.skinUrl}
+                      skinTexture={player.skinTexture}
+                      skinTextureValue={player.skinTextureValue}
+                      skinProvider={player.skinProvider}
+                      platform={player.platform}
+                      minecraftType={player.minecraftType}
+                      javaUuid={player.javaUuid}
+                      bedrockXuid={player.bedrockXuid}
+                      xuid={player.xuid}
+                      skinModel={player.skinModel}
+                      renderSize="table"
+                    />
+                    <span className="min-w-0 text-[clamp(0.86rem,1.4vw,1rem)] leading-none">{player.username}</span>
                   </Link>
                 </td>
-                <td className="px-4 py-4 text-right">{player.kills}</td>
-                <td className="px-4 py-4 text-right text-red-200">{player.deaths}</td>
-                <td className="px-4 py-4 text-right font-black text-purple-100">{player.points}</td>
-                <td className="px-4 py-4 text-right">{formatHours(player.hoursOfGameplay)}</td>
+                <td className="px-4 py-0 text-right align-middle">{player.kills}</td>
+                <td className="px-4 py-0 text-right align-middle text-red-200">{player.deaths}</td>
+                <td className="px-4 py-0 text-right align-middle font-black text-purple-100">{player.points}</td>
+                <td className="px-4 py-0 text-right align-middle">{formatHours(player.hoursOfGameplay)}</td>
               </tr>
             ))
           ) : (
