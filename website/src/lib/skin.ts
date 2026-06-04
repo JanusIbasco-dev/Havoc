@@ -26,6 +26,12 @@ export function getPlayerHeadUrl(player: SkinResolverPlayer, size = 96) {
   return `/api/players/head?${params.toString()}`;
 }
 
+export function getPlayerBodyPreviewUrl(player: SkinResolverPlayer, size = 260) {
+  const identifier = getJavaUuid(player) || getFloodgateUuid(player) || player.username || defaultHeadIdentifier(player);
+
+  return `https://mc-heads.net/body/${encodeURIComponent(identifier)}/${clampHeadSize(size)}.png`;
+}
+
 export function getPlayerSkinSource(player: SkinResolverPlayer): SkinSource {
   const provider = player.skinProvider || "unknown";
   const model = player.skinModel === "slim" ? "slim" : "classic";

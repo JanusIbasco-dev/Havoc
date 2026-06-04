@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
-import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
+import { PlayerBodyPreview } from "@/components/PlayerBodyPreview";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { StatBox } from "@/components/StatBox";
 import { formatDate, formatHours } from "@/lib/format";
 import { getPlayerProfile } from "@/lib/players";
 import { getCurrentSeason } from "@/lib/season-data";
 import { resolveSeasonNumber } from "@/lib/seasons";
-import { getSkinProviderLabel } from "@/lib/skin";
 
 type PlayerProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -26,7 +25,6 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
   }
 
   const { player, rank, kdRatio, recentActivity } = profile;
-  const skinLabel = getSkinProviderLabel(player);
 
   return (
     <div className="relative min-h-screen overflow-hidden px-5 pb-12 pt-28">
@@ -47,11 +45,10 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
             <span className="profile-particle bottom-[24%] left-[24%] animation-delay-700" />
             <span className="profile-particle bottom-[18%] right-[22%] animation-delay-1000" />
             <div className="relative z-10 grid place-items-center">
-              <PlayerHeadAvatar player={player} size={220} />
+              <PlayerBodyPreview player={player} size={260} className="profile-body-preview" />
             </div>
           </div>
           <div className="mt-7 text-center">
-            {skinLabel ? <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-purple-100/45">{skinLabel}</p> : null}
             <h1 className="break-words text-[clamp(2.25rem,5vw,3.25rem)] font-black leading-none text-white">{player.username}</h1>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
               <PlatformBadge platform={player.platform} />
