@@ -40,23 +40,26 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
       </Link>
 
       <section className="grid gap-6 lg:grid-cols-[390px_1fr]">
-        <aside className="glass-panel purple-glow overflow-hidden rounded-3xl border-purple-300/20 p-5 shadow-[0_0_60px_rgba(139,92,246,0.18)]">
-          <div className="grid place-items-center py-3">
-            <PlayerHeadAvatar player={player} size={220} />
-          </div>
-          {skinLabel ? <p className="mt-3 text-center text-xs font-black uppercase tracking-[0.18em] text-purple-100/48">{skinLabel}</p> : null}
-          <div className="mt-5">
-            <div className="flex items-center justify-center gap-4 text-center sm:text-left">
-              <PlayerHeadAvatar player={player} size={96} />
-              <div className="min-w-0">
-                <h1 className="truncate text-4xl font-black text-white">{player.username}</h1>
-                <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                  <PlatformBadge platform={player.platform} />
-                  <p className="text-purple-100/50">Rank {rank ? `#${rank}` : "N/A"}</p>
-                </div>
-              </div>
+        <aside className="glass-panel purple-glow overflow-hidden rounded-3xl border-purple-300/20 px-6 py-7 shadow-[0_0_60px_rgba(139,92,246,0.18)]">
+          <div className="profile-preview-showcase">
+            <span className="profile-particle left-[18%] top-[22%] animation-delay-0" />
+            <span className="profile-particle right-[16%] top-[18%] animation-delay-300" />
+            <span className="profile-particle bottom-[24%] left-[24%] animation-delay-700" />
+            <span className="profile-particle bottom-[18%] right-[22%] animation-delay-1000" />
+            <div className="relative z-10 grid place-items-center">
+              <PlayerHeadAvatar player={player} size={220} />
             </div>
-            <p className="mt-5 break-all border-t border-purple-500/14 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-purple-100/42">{player.uuid}</p>
+          </div>
+          <div className="mt-7 text-center">
+            {skinLabel ? <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-purple-100/45">{skinLabel}</p> : null}
+            <h1 className="break-words text-[clamp(2.25rem,5vw,3.25rem)] font-black leading-none text-white">{player.username}</h1>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+              <PlatformBadge platform={player.platform} />
+              <span className="rounded-md border border-purple-300/15 bg-purple-500/10 px-3 py-1.5 text-sm font-black uppercase tracking-[0.12em] text-purple-100/70">
+                Rank {rank ? `#${rank}` : "N/A"}
+              </span>
+            </div>
+            <p className="mt-6 break-all border-t border-purple-500/14 px-2 pt-5 text-xs font-bold uppercase tracking-[0.14em] text-purple-100/38">{player.uuid}</p>
           </div>
         </aside>
 
