@@ -27,8 +27,8 @@ export function PlayerSkinRender({ uuid, username, skinUrl, skinProvider, platfo
     ? "h-16 w-12"
     : podium
     ? podiumChampion
-      ? "h-[178px] w-[150px]"
-      : "h-[146px] w-[126px]"
+      ? "h-[132px] w-[112px]"
+      : "h-[108px] w-[92px]"
     : compact
       ? "min-h-24 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20"
       : "min-h-72 rounded-3xl border border-purple-400/25 bg-gradient-to-b from-purple-500/12 to-black/20";
@@ -74,7 +74,7 @@ function TextureBody({
   mini: boolean;
   onError: () => void;
 }) {
-  const scale = mini ? 2 : podium ? (podiumSize === "champion" ? 5 : 4) : compact ? 3 : 7;
+  const scale = mini ? 2 : podium ? (podiumSize === "champion" ? 4 : 3) : compact ? 3 : 7;
 
   return (
     <div className="relative flex flex-col items-center drop-shadow-[0_0_34px_rgba(139,92,246,0.45)]" style={{ width: 16 * scale, height: 32 * scale }}>
