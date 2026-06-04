@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { MotionReveal } from "@/components/MotionReveal";
-import { PlayerHead } from "@/components/PlayerHead";
+import { PlayerSkinRender } from "@/components/PlayerSkinRender";
 import { WarPodium } from "@/components/WarPodium";
 import { formatHours, formatPhilippineDate } from "@/lib/format";
 import { getPlayers } from "@/lib/players";
@@ -254,8 +254,10 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
                 <td className="px-4 py-4 font-black text-purple-200">#{index + 1}</td>
                 <td className="px-4 py-4">
                   <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                    <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="sm" />
-                    {player.username}
+                    <span className="relative -my-3 grid h-16 w-12 shrink-0 place-items-end overflow-visible">
+                      <PlayerSkinRender username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} mini />
+                    </span>
+                    <span className="min-w-0 truncate">{player.username}</span>
                   </Link>
                 </td>
                 <td className="px-4 py-4 text-right">{player.kills}</td>
