@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
-import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
+import { PlayerBodyPreview } from "@/components/PlayerBodyPreview";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { formatHours } from "@/lib/format";
 import { getPlayers } from "@/lib/players";
@@ -34,7 +34,9 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
               className="glass-panel neon-hover rounded-3xl p-5"
             >
               <div className="flex items-center gap-4">
-                <PlayerHeadAvatar username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinTexture={player.skinTexture} skinTextureValue={player.skinTextureValue} skinProvider={player.skinProvider} platform={player.platform} minecraftType={player.minecraftType} javaUuid={player.javaUuid} bedrockXuid={player.bedrockXuid} xuid={player.xuid} skinModel={player.skinModel} size="table" />
+                <div className="ranking-preview-frame">
+                  <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                </div>
                 <div className="min-w-0">
                   <h2 className="truncate text-xl font-black text-white">{player.username}</h2>
                   <div className="mt-1 flex flex-wrap items-center gap-2">

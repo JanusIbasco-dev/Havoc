@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
+import { PlayerBodyPreview } from "@/components/PlayerBodyPreview";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type WarPodiumProps = {
@@ -75,21 +75,9 @@ export function WarPodium({ players }: WarPodiumProps) {
               </div>
 
               <div className="flex justify-end">
-                <PlayerHeadAvatar
-                  uuid={player.uuid}
-                  username={player.username}
-                  skinUrl={player.skinUrl}
-                  skinTexture={player.skinTexture}
-                  skinTextureValue={player.skinTextureValue}
-                  skinProvider={player.skinProvider}
-                  platform={player.platform}
-                  minecraftType={player.minecraftType}
-                  javaUuid={player.javaUuid}
-                  bedrockXuid={player.bedrockXuid}
-                  xuid={player.xuid}
-                  skinModel={player.skinModel}
-                  size="top3"
-                />
+                <div className={`ranking-preview-frame ${index === 0 ? "ranking-preview-gold" : index === 1 ? "ranking-preview-silver" : "ranking-preview-bronze"}`}>
+                  <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                </div>
               </div>
             </div>
           </Link>

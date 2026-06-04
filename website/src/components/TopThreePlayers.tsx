@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
+import { PlayerBodyPreview } from "@/components/PlayerBodyPreview";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type TopThreePlayersProps = {
@@ -29,12 +29,14 @@ export function TopThreePlayers({ players }: TopThreePlayersProps) {
               <span className="text-xs font-black uppercase tracking-[0.2em]">{style.label}</span>
               <span className="text-2xl font-black">#{index + 1}</span>
             </div>
-            <div className="mt-5 flex items-center gap-4">
-              <PlayerHeadAvatar username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinTexture={player.skinTexture} skinTextureValue={player.skinTextureValue} skinProvider={player.skinProvider} platform={player.platform} minecraftType={player.minecraftType} javaUuid={player.javaUuid} bedrockXuid={player.bedrockXuid} xuid={player.xuid} skinModel={player.skinModel} size="top3" />
+            <div className="mt-5 flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <h3 className="truncate text-2xl font-black text-white">{player.username}</h3>
                 <p className="mt-1 text-sm opacity-80">{player.points} points</p>
                 <p className="text-sm opacity-70">{player.kills} kills</p>
+              </div>
+              <div className={`ranking-preview-frame top-rank-preview-frame ${rankingPreviewClass(index)}`}>
+                <PlayerBodyPreview player={player} size={132} className="ranking-body-preview top-rank-body-preview" />
               </div>
             </div>
           </Link>
@@ -42,4 +44,8 @@ export function TopThreePlayers({ players }: TopThreePlayersProps) {
       })}
     </section>
   );
+}
+
+function rankingPreviewClass(index: number) {
+  return index === 0 ? "ranking-preview-gold" : index === 1 ? "ranking-preview-silver" : "ranking-preview-bronze";
 }
