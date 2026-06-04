@@ -71,23 +71,25 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </section>
         </MotionReveal>
 
-        <section className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_460px]">
-          <MotionReveal>
-            <div id="leaderboard" className="space-y-5">
+        <section id="leaderboard" className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)] lg:items-start">
+          <MotionReveal className="contents lg:col-start-1 lg:row-start-1 lg:block lg:space-y-5">
+            <div className="order-1">
               <SectionHeader eyebrow={season} title={`${currentSeason.name} Leaderboard`} />
+            </div>
+            <div className="order-3">
               <CompactLeaderboard players={players} />
             </div>
           </MotionReveal>
 
-          <aside className="space-y-8">
-            <MotionReveal delay={0.06}>
-              <div className="space-y-10">
+          <aside className="contents lg:col-start-2 lg:row-start-1 lg:block lg:space-y-8">
+            <MotionReveal className="order-2" delay={0.06}>
+              <div className="space-y-5">
                 <SectionHeader eyebrow="Podium" title="Top 3 Players" />
                 <WarPodium players={players} compact />
               </div>
             </MotionReveal>
 
-            <MotionReveal delay={0.12}>
+            <MotionReveal className="order-4" delay={0.12}>
               <div id="rules" className="space-y-5">
                 <SectionHeader eyebrow="Victory Path" title="How to Become Champion" />
                 <ChampionStrip />
