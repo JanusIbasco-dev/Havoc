@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,20 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Link href="/" aria-label="Seasons" className="grid h-[74px] w-[74px] place-items-center rounded-full bg-purple-500/[0.03] shadow-[0_0_30px_rgba(139,92,246,0.18)]">
               <Image src="/HavocLogo.png" alt="Havoc logo" width={74} height={74} className="h-[74px] w-[74px] object-contain drop-shadow-[0_0_18px_rgba(139,92,246,0.32)]" priority />
             </Link>
-            <nav className="nav-underline-group flex items-center gap-5 text-sm font-black uppercase tracking-[0.18em] text-purple-100/70">
-              <Link className="nav-underline-link nav-underline-active pb-1 text-white transition hover:text-purple-200" href="/#leaderboard">
-                Leaderboard
-              </Link>
-              <Link className="nav-underline-link pb-1 transition hover:text-white" href="/players">
-                Players
-              </Link>
-              <Link className="nav-underline-link hidden pb-1 transition hover:text-white sm:inline-flex" href="/#seasons">
-                Seasons
-              </Link>
-              <Link className="nav-underline-link nav-underline-danger hidden pb-1 transition hover:text-white sm:inline-flex" href="/#rules">
-                Rules
-              </Link>
-            </nav>
+            <Navbar />
           </div>
         </header>
         <main>{children}</main>
