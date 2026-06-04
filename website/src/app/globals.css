@@ -114,6 +114,39 @@ a {
   letter-spacing: 0.035em;
 }
 
+.nav-underline-link {
+  position: relative;
+}
+
+.nav-underline-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  background: rgb(192, 132, 252);
+  opacity: 0;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.nav-underline-danger::after {
+  background: rgb(248, 113, 113);
+}
+
+.nav-underline-active::after,
+.nav-underline-link:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scaleX(1);
+}
+
+.nav-underline-group:hover .nav-underline-active:not(:hover)::after {
+  opacity: 0;
+  transform: translateX(-50%) scaleX(0);
+}
+
 .profile-head-avatar {
   width: 96px;
   height: 96px;
