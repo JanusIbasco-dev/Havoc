@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlayerHead } from "@/components/PlayerHead";
+import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type TopThreePlayersProps = {
@@ -30,7 +30,7 @@ export function TopThreePlayers({ players }: TopThreePlayersProps) {
               <span className="text-2xl font-black">#{index + 1}</span>
             </div>
             <div className="mt-5 flex items-center gap-4">
-              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="lg" />
+              <PlayerHeadAvatar username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinTexture={player.skinTexture} skinTextureValue={player.skinTextureValue} skinProvider={player.skinProvider} platform={player.platform} minecraftType={player.minecraftType} javaUuid={player.javaUuid} bedrockXuid={player.bedrockXuid} xuid={player.xuid} skinModel={player.skinModel} size="top3" />
               <div className="min-w-0">
                 <h3 className="truncate text-2xl font-black text-white">{player.username}</h3>
                 <p className="mt-1 text-sm opacity-80">{player.points} points</p>

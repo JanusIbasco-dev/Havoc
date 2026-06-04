@@ -2,7 +2,7 @@ import type { LeaderboardPlayer } from "@/types/player";
 
 type SkinResolverPlayer = Pick<
   LeaderboardPlayer,
-  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "skinUrl" | "skinTexture" | "skinTextureValue" | "skinProvider" | "skinModel"
+  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
 >;
 
 export type SkinSource = {
@@ -15,11 +15,18 @@ export type SkinSource = {
 const defaultSteveSkin = "https://mc-heads.net/skin/MHF_Steve";
 const defaultAlexSkin = "https://mc-heads.net/skin/MHF_Alex";
 
-export function getPlayerHeadUrl(player: SkinResolverPlayer): SkinSource {
-  return getPlayerBodyRenderUrl(player);
+export function getPlayerHeadUrl(player: SkinResolverPlayer, size = 96) {
+  const skinSource = getPlayerHeadSkinSource(player);
+  const params = new URLSearchParams({
+    src: skinSource,
+    size: `${clampHeadSize(size)}`,
+    v: player.updatedAt || `${Date.now()}`
+  });
+
+  return `/api/players/head?${params.toString()}`;
 }
 
-export function getPlayerBodyRenderUrl(player: SkinResolverPlayer): SkinSource {
+export function getPlayerSkinSource(player: SkinResolverPlayer): SkinSource {
   const provider = player.skinProvider || "unknown";
   const model = player.skinModel === "slim" ? "slim" : "classic";
   const storedSkin = usableUrl(player.skinUrl) || usableUrl(player.skinTexture) || skinUrlFromTextureValue(player.skinTextureValue);
@@ -88,6 +95,69 @@ function getJavaUuid(player: SkinResolverPlayer) {
   return /^[0-9a-fA-F]{32}$/.test(normalized) ? normalized : null;
 }
 
+function getFloodgateUuid(player: SkinResolverPlayer) {
+  const candidate = player.floodgateUuid || player.uuid;
+  const normalized = candidate.replace(/-/g, "").trim();
+  return /^[0-9a-fA-F]{32}$/.test(normalized) ? normalized : null;
+}
+
+function defaultHeadIdentifier(player: SkinResolverPlayer) {
+  const normalized = (player.javaUuid || player.uuid || player.bedrockXuid || player.xuid || "").replace(/-/g, "");
+  const useAlex = normalized ? parseInt(normalized.slice(-1), 16) % 2 === 1 : false;
+  return useAlex ? "MHF_Alex" : "MHF_Steve";
+}
+
+function getPlayerHeadSkinSource(player: SkinResolverPlayer) {
+  const storedSkin = rawSkinUrl(player.skinTextureUrl) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureValue)) || rawSkinUrl(player.skinTexture) || rawSkinUrl(player.skinUrl);
+  if (storedSkin) {
+    return normalizeSkinUrl(storedSkin);
+  }
+
+  const javaUuid = getJavaUuid(player);
+  if (javaUuid) {
+    return `https://crafatar.com/skins/${encodeURIComponent(javaUuid)}`;
+  }
+
+  return `https://mc-heads.net/skin/${encodeURIComponent(player.username || defaultHeadIdentifier(player))}`;
+}
+
+function rawSkinUrl(value?: string | null) {
+  const url = usableUrl(value);
+  if (!url) {
+    return null;
+  }
+
+  if (url.startsWith("data:image/png;base64,")) {
+    return url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.toLowerCase();
+    const host = parsed.hostname.toLowerCase();
+
+    if (path.includes("/body") || path.includes("/bust") || path.includes("/full") || path.includes("/render") || path.includes("/avatar") || path.includes("/head")) {
+      return null;
+    }
+
+    if (host === "textures.minecraft.net" && path.startsWith("/texture/")) {
+      return url;
+    }
+
+    if (host === "crafatar.com" && path.startsWith("/skins/")) {
+      return url;
+    }
+
+    if (host === "mc-heads.net" && path.startsWith("/skin/")) {
+      return url;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 function getDefaultSkin(player: SkinResolverPlayer): SkinSource {
   const normalized = (player.javaUuid || player.uuid || player.bedrockXuid || player.xuid || "").replace(/-/g, "");
   const useAlex = normalized ? parseInt(normalized.slice(-1), 16) % 2 === 1 : false;
@@ -98,6 +168,10 @@ function getDefaultSkin(player: SkinResolverPlayer): SkinSource {
     provider: player.skinProvider || "unknown",
     model: useAlex ? "slim" : "classic"
   };
+}
+
+function clampHeadSize(size: number) {
+  return Math.min(600, Math.max(32, Math.round(size)));
 }
 
 function normalizeSkinUrl(value: string) {

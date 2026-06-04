@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { MotionReveal } from "@/components/MotionReveal";
-import { PlayerSkinRender } from "@/components/PlayerSkinRender";
+import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
 import { WarPodium } from "@/components/WarPodium";
 import { formatHours, formatPhilippineDate } from "@/lib/format";
 import { getPlayers } from "@/lib/players";
@@ -254,7 +254,7 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
                 <td className="px-4 py-0 align-middle font-black text-purple-200">#{index + 1}</td>
                 <td className="px-4 py-0 align-middle">
                   <Link className="flex h-[76px] items-center gap-[14px] font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                    <PlayerSkinRender
+                    <PlayerHeadAvatar
                       username={player.username}
                       uuid={player.uuid}
                       skinUrl={player.skinUrl}
@@ -267,7 +267,7 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
                       bedrockXuid={player.bedrockXuid}
                       xuid={player.xuid}
                       skinModel={player.skinModel}
-                      renderSize="table"
+                      size="table"
                     />
                     <span className="min-w-0 text-[clamp(0.86rem,1.4vw,1rem)] leading-none">{player.username}</span>
                   </Link>

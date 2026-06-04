@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlayerHead } from "@/components/PlayerHead";
+import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
 import { formatHours } from "@/lib/format";
 import type { LeaderboardPlayer } from "@/types/player";
 
@@ -14,7 +14,7 @@ export function SeasonChampionCard({ player }: SeasonChampionCardProps) {
       {player ? (
         <div className="mt-4 space-y-4">
           <div className="flex items-center gap-3">
-            <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} />
+            <PlayerHeadAvatar username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinTexture={player.skinTexture} skinTextureValue={player.skinTextureValue} skinProvider={player.skinProvider} platform={player.platform} minecraftType={player.minecraftType} javaUuid={player.javaUuid} bedrockXuid={player.bedrockXuid} xuid={player.xuid} skinModel={player.skinModel} size="table" />
             <div className="min-w-0">
               <h2 className="truncate text-xl font-black">{player.username}</h2>
               <p className="text-xs text-purple-100/45">{player.season}</p>

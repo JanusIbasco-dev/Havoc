@@ -7,6 +7,7 @@ export type LeaderboardPlayer = {
   bedrockXuid?: string | null;
   xuid?: string | null;
   floodgateUuid?: string | null;
+  skinTextureUrl?: string | null;
   skinUrl?: string | null;
   skinTexture?: string | null;
   skinTextureValue?: string | null;

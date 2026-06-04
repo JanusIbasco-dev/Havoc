@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { PlayerHead } from "@/components/PlayerHead";
+import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { formatHours } from "@/lib/format";
 import { getRankMap, sortPlayers } from "@/lib/rankings";
@@ -76,7 +76,7 @@ export function LeaderboardExperience({ players }: LeaderboardExperienceProps) {
                   <td className="px-3 py-4 text-lg font-black text-purple-200">#{rank}</td>
                   <td className="px-3 py-4">
                     <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
-                      <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="sm" />
+                      <PlayerHeadAvatar username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinTexture={player.skinTexture} skinTextureValue={player.skinTextureValue} skinProvider={player.skinProvider} platform={player.platform} minecraftType={player.minecraftType} javaUuid={player.javaUuid} bedrockXuid={player.bedrockXuid} xuid={player.xuid} skinModel={player.skinModel} size="table" />
                       <span>{player.username}</span>
                       <PlatformBadge platform={player.platform} compact />
                     </Link>

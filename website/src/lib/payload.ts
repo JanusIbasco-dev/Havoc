@@ -1,3 +1,5 @@
+import { resolveSeasonNumber } from "@/lib/seasons";
+
 export function skinUrlFromPayload(payload: Record<string, unknown>) {
   const directSkinUrl = payload.skinUrl;
   if (typeof directSkinUrl === "string" && isUsableSkinUrl(directSkinUrl)) {
@@ -31,6 +33,11 @@ export function skinTextureValueFromPayload(payload: Record<string, unknown>) {
   return stringFromPayload(payload, "skinTextureValue") || stringFromNestedSkin(payload, "textureValue");
 }
 
+export function skinTextureFromPayload(payload: Record<string, unknown>) {
+  const directTexture = stringFromPayload(payload, "skinTexture") || stringFromNestedSkin(payload, "texture");
+  return directTexture && isUsableSkinUrl(directTexture) ? normalizeSkinUrl(directTexture) : null;
+}
+
 export function skinTextureSignatureFromPayload(payload: Record<string, unknown>) {
   return stringFromPayload(payload, "skinTextureSignature") || stringFromNestedSkin(payload, "signature");
 }
@@ -43,6 +50,19 @@ export function skinProviderFromPayload(payload: Record<string, unknown>) {
 export function platformFromPayload(payload: Record<string, unknown>) {
   const platform = stringFromPayload(payload, "platform");
   return platform === "bedrock" ? "bedrock" : platform === "java" ? "java" : undefined;
+}
+
+export function minecraftTypeFromPayload(payload: Record<string, unknown>) {
+  const minecraftType = stringFromPayload(payload, "minecraftType") || stringFromPayload(payload, "type");
+  return minecraftType === "java" || minecraftType === "bedrock" || minecraftType === "cracked" || minecraftType === "unknown" ? minecraftType : undefined;
+}
+
+export function javaUuidFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "javaUuid") || stringFromPayload(payload, "mojangUuid");
+}
+
+export function bedrockXuidFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "bedrockXuid") || stringFromPayload(payload, "xuid");
 }
 
 export function xuidFromPayload(payload: Record<string, unknown>) {
@@ -107,4 +127,3 @@ export function numberFromPayload(payload: Record<string, unknown>, key: string,
 export function playtimeFromPayload(payload: Record<string, unknown>) {
   return numberFromPayload(payload, "playtimeHours", numberFromPayload(payload, "hoursOfGameplay"));
 }
-import { resolveSeasonNumber } from "@/lib/seasons";

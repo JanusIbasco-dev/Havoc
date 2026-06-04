@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
-import { PlayerHead } from "@/components/PlayerHead";
-import { PlayerSkinRender } from "@/components/PlayerSkinRender";
+import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
 import { PlatformBadge } from "@/components/PlatformBadge";
 import { StatBox } from "@/components/StatBox";
 import { formatDate, formatHours } from "@/lib/format";
@@ -42,14 +41,16 @@ export default async function PlayerProfilePage({ params, searchParams }: Player
 
       <section className="grid gap-6 lg:grid-cols-[390px_1fr]">
         <aside className="glass-panel purple-glow overflow-hidden rounded-3xl border-purple-300/20 p-5 shadow-[0_0_60px_rgba(139,92,246,0.18)]">
-          <PlayerSkinRender uuid={player.uuid} username={player.username} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} />
+          <div className="grid place-items-center py-3">
+            <PlayerHeadAvatar player={player} size={220} />
+          </div>
           {skinLabel ? <p className="mt-3 text-center text-xs font-black uppercase tracking-[0.18em] text-purple-100/48">{skinLabel}</p> : null}
           <div className="mt-5">
-            <div className="flex items-center gap-4">
-              <PlayerHead username={player.username} uuid={player.uuid} skinUrl={player.skinUrl} skinProvider={player.skinProvider} platform={player.platform} size="lg" />
+            <div className="flex items-center justify-center gap-4 text-center sm:text-left">
+              <PlayerHeadAvatar player={player} size={96} />
               <div className="min-w-0">
                 <h1 className="truncate text-4xl font-black text-white">{player.username}</h1>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
+                <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                   <PlatformBadge platform={player.platform} />
                   <p className="text-purple-100/50">Rank {rank ? `#${rank}` : "N/A"}</p>
                 </div>

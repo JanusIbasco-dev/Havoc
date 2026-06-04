@@ -114,6 +114,13 @@ a {
   letter-spacing: 0.035em;
 }
 
+.profile-head-avatar {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
 @keyframes ceremony-idle {
   0%, 100% {
     transform: translateY(0) rotate(-0.6deg);

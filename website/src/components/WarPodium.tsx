@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlayerSkinRender } from "@/components/PlayerSkinRender";
+import { PlayerHeadAvatar } from "@/components/PlayerHeadAvatar";
 import type { LeaderboardPlayer } from "@/types/player";
 
 type WarPodiumProps = {
@@ -75,7 +75,7 @@ export function WarPodium({ players }: WarPodiumProps) {
               </div>
 
               <div className="flex justify-end">
-                <PlayerSkinRender
+                <PlayerHeadAvatar
                   uuid={player.uuid}
                   username={player.username}
                   skinUrl={player.skinUrl}
@@ -88,7 +88,7 @@ export function WarPodium({ players }: WarPodiumProps) {
                   bedrockXuid={player.bedrockXuid}
                   xuid={player.xuid}
                   skinModel={player.skinModel}
-                  renderSize="top3"
+                  size="top3"
                 />
               </div>
             </div>

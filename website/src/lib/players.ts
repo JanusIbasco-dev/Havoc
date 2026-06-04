@@ -59,7 +59,7 @@ export async function getPlayer(uuid: string, season?: string | number): Promise
   try {
     const db = await getDatabase();
     const player = await db.collection<PlayerDocument>(collectionName).findOne({ uuid, season: resolveSeasonNumber(season) }, { projection: { _id: 0 } });
-    return player ? toLeaderboardPlayer(player) : null;
+    return player ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
   } catch {
     return null;
   }
@@ -69,7 +69,7 @@ export async function getPlayerByUsername(username: string, season?: string | nu
   try {
     const db = await getDatabase();
     const player = await db.collection<PlayerDocument>(collectionName).findOne({ username, season: resolveSeasonNumber(season) }, { projection: { _id: 0 } });
-    return player ? toLeaderboardPlayer(player) : null;
+    return player ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
   } catch {
     return null;
   }
@@ -86,7 +86,7 @@ export async function getPlayerByUuidOrUsername(identifier: string, season?: str
       },
       { projection: { _id: 0 } }
     );
-    return player ? toLeaderboardPlayer(player) : null;
+    return player ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
   } catch {
     return null;
   }
@@ -509,29 +509,59 @@ async function cacheResolvedSkin(player: LeaderboardPlayer): Promise<Leaderboard
       await updateCachedSkin(player, {
         skinUrl: decodedSkinUrl,
         ...(decodedModel ? { skinModel: decodedModel } : {}),
+        skinProvider: player.skinProvider === "unknown" ? "offline" : player.skinProvider,
         skinUpdatedAt: now,
         lastSkinFetchAt: now
       });
-      return { ...player, skinUrl: decodedSkinUrl, skinModel: decodedModel ?? player.skinModel, skinUpdatedAt: now, lastSkinFetchAt: now };
+      return { ...player, skinUrl: decodedSkinUrl, skinModel: decodedModel ?? player.skinModel, skinProvider: player.skinProvider === "unknown" ? "offline" : player.skinProvider, skinUpdatedAt: now, lastSkinFetchAt: now };
     }
   }
 
-  const minecraftType = player.minecraftType || player.platform || "unknown";
-  const javaUuid = normalizeUuid(player.javaUuid || (minecraftType === "java" ? player.uuid : ""));
-  if (javaUuid) {
-    const skinUrl = `https://crafatar.com/skins/${javaUuid}`;
-    await updateCachedSkin(player, {
+  if (!shouldFetchSkin(player.lastSkinFetchAt)) {
+    return player;
+  }
+
+  const savedJavaUuid = normalizeUuid(player.javaUuid || "");
+  if (savedJavaUuid) {
+    const resolved = await fetchMojangSkinByUuid(savedJavaUuid);
+    const skinUrl = resolved?.skinUrl || `https://crafatar.com/skins/${savedJavaUuid}`;
+    const fields = {
       skinUrl,
-      javaUuid,
-      minecraftType: "java",
+      javaUuid: savedJavaUuid,
+      minecraftType: "java" as const,
+      skinProvider: "mojang" as const,
+      ...(resolved?.skinTextureValue ? { skinTextureValue: resolved.skinTextureValue } : {}),
+      ...(resolved?.skinTextureSignature ? { skinTextureSignature: resolved.skinTextureSignature } : {}),
+      ...(resolved?.skinModel ? { skinModel: resolved.skinModel } : {}),
       skinUpdatedAt: now,
       lastSkinFetchAt: now
-    });
-    return { ...player, skinUrl, javaUuid, minecraftType: "java", skinUpdatedAt: now, lastSkinFetchAt: now };
+    };
+    await updateCachedSkin(player, fields);
+    return { ...player, ...fields };
+  }
+
+  const mojangUuid = await resolveMojangUuidFromUsername(player);
+  if (mojangUuid) {
+    const resolved = await fetchMojangSkinByUuid(mojangUuid);
+    const skinUrl = resolved?.skinUrl || `https://crafatar.com/skins/${mojangUuid}`;
+    const fields = {
+      skinUrl,
+      javaUuid: mojangUuid,
+      minecraftType: "java" as const,
+      platform: "java" as const,
+      skinProvider: "mojang" as const,
+      ...(resolved?.skinTextureValue ? { skinTextureValue: resolved.skinTextureValue } : {}),
+      ...(resolved?.skinTextureSignature ? { skinTextureSignature: resolved.skinTextureSignature } : {}),
+      ...(resolved?.skinModel ? { skinModel: resolved.skinModel } : {}),
+      skinUpdatedAt: now,
+      lastSkinFetchAt: now
+    };
+    await updateCachedSkin(player, fields);
+    return { ...player, ...fields };
   }
 
   const bedrockXuid = (player.bedrockXuid || player.xuid || "").trim();
-  if (bedrockXuid && shouldFetchSkin(player.lastSkinFetchAt)) {
+  if (bedrockXuid) {
     const bedrockSkin = await fetchBedrockSkin(bedrockXuid);
     if (bedrockSkin?.skinUrl) {
       await updateCachedSkin(player, {
@@ -559,7 +589,38 @@ async function cacheResolvedSkin(player: LeaderboardPlayer): Promise<Leaderboard
     return { ...player, bedrockXuid, minecraftType: "bedrock", lastSkinFetchAt: now };
   }
 
-  return player;
+  const elyBySkin = await fetchElyBySkin(player);
+  if (elyBySkin?.skinUrl) {
+    const fields = {
+      skinUrl: elyBySkin.skinUrl,
+      skinTextureValue: elyBySkin.skinTextureValue,
+      skinTextureSignature: elyBySkin.skinTextureSignature,
+      skinModel: elyBySkin.skinModel,
+      skinProvider: "elyby" as const,
+      skinUpdatedAt: now,
+      lastSkinFetchAt: now
+    };
+    await updateCachedSkin(player, fields);
+    return { ...player, ...fields };
+  }
+
+  const offlineSkin = await fetchConfiguredOfflineSkin(player);
+  if (offlineSkin?.skinUrl) {
+    const fields = {
+      skinUrl: offlineSkin.skinUrl,
+      skinTextureValue: offlineSkin.skinTextureValue,
+      skinModel: offlineSkin.skinModel,
+      skinProvider: "offline" as const,
+      skinUpdatedAt: now,
+      lastSkinFetchAt: now
+    };
+    await updateCachedSkin(player, fields);
+    return { ...player, ...fields };
+  }
+
+  const inferredType = inferMinecraftType(player);
+  await updateCachedSkin(player, { minecraftType: inferredType, lastSkinFetchAt: now });
+  return { ...player, minecraftType: inferredType, lastSkinFetchAt: now };
 }
 
 async function updateCachedSkin(player: LeaderboardPlayer, fields: Partial<PlayerDocument>) {
@@ -597,9 +658,189 @@ async function fetchBedrockSkin(xuid: string) {
   }
 }
 
+async function resolveMojangUuidFromUsername(player: LeaderboardPlayer) {
+  if (!canUseMojangUsernameLookup(player)) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(player.username)}`, { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as { id?: unknown; name?: unknown };
+    const mojangUuid = typeof payload.id === "string" ? normalizeUuid(payload.id) : null;
+    if (!mojangUuid) {
+      return null;
+    }
+
+    const savedUuid = normalizeUuid(player.uuid);
+    return !savedUuid || savedUuid === mojangUuid ? mojangUuid : null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchMojangSkinByUuid(uuid: string) {
+  try {
+    const response = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${encodeURIComponent(uuid)}?unsigned=false`, { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as { properties?: Array<{ name?: unknown; value?: unknown; signature?: unknown }> };
+    const textures = payload.properties?.find((property) => property.name === "textures");
+    if (typeof textures?.value !== "string") {
+      return null;
+    }
+
+    const skinUrl = skinUrlFromTextureValue(textures.value);
+    if (!skinUrl) {
+      return null;
+    }
+
+    return {
+      skinUrl,
+      skinTextureValue: textures.value,
+      skinTextureSignature: typeof textures.signature === "string" ? textures.signature : undefined,
+      skinModel: skinModelFromTextureValue(textures.value) ?? "classic" as const
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchElyBySkin(player: LeaderboardPlayer) {
+  if (!canUseElyByLookup(player)) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`https://skinsystem.ely.by/textures/signed/${encodeURIComponent(player.username)}`, { cache: "no-store" });
+    if (response.status === 204 || response.status === 404 || !response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as { properties?: Array<{ name?: unknown; value?: unknown; signature?: unknown }> };
+    const textures = payload.properties?.find((property) => property.name === "textures");
+    if (typeof textures?.value !== "string") {
+      return null;
+    }
+
+    const skinUrl = skinUrlFromTextureValue(textures.value);
+    if (!skinUrl) {
+      return null;
+    }
+
+    return {
+      skinUrl,
+      skinTextureValue: textures.value,
+      skinTextureSignature: typeof textures.signature === "string" ? textures.signature : undefined,
+      skinModel: skinModelFromTextureValue(textures.value) ?? "classic" as const
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchConfiguredOfflineSkin(player: LeaderboardPlayer) {
+  const template = process.env.OFFLINE_SKIN_PROVIDER_URL || process.env.LAUNCHER_SKIN_PROVIDER_URL || process.env.NEXT_PUBLIC_OFFLINE_SKIN_PROVIDER_URL;
+  if (!template || !canUseOfflineLookup(player)) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(expandSkinProviderTemplate(template, player), { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.startsWith("image/")) {
+      return { skinUrl: response.url, skinModel: "classic" as const };
+    }
+
+    const payload = (await response.json()) as { skinUrl?: unknown; url?: unknown; skinTexture?: unknown; textureValue?: unknown; skinTextureValue?: unknown; model?: unknown };
+    const textureValue = typeof payload.skinTextureValue === "string" ? payload.skinTextureValue : typeof payload.textureValue === "string" ? payload.textureValue : null;
+    const skinUrl = typeof payload.skinUrl === "string" ? payload.skinUrl : typeof payload.url === "string" ? payload.url : typeof payload.skinTexture === "string" ? payload.skinTexture : textureValue ? skinUrlFromTextureValue(textureValue) : null;
+
+    if (!skinUrl || !isUsableSkinUrl(skinUrl)) {
+      return null;
+    }
+
+    return {
+      skinUrl: normalizeSkinUrl(skinUrl),
+      skinTextureValue: textureValue || undefined,
+      skinModel: payload.model === "slim" || skinModelFromTextureValue(textureValue) === "slim" ? "slim" as const : "classic" as const
+    };
+  } catch {
+    return null;
+  }
+}
+
 function normalizeUuid(value?: string | null) {
   const normalized = (value || "").replace(/-/g, "").trim();
   return /^[0-9a-fA-F]{32}$/.test(normalized) ? normalized : null;
+}
+
+function canUseMojangUsernameLookup(player: LeaderboardPlayer) {
+  const minecraftType = inferMinecraftType(player);
+  const username = player.username.trim();
+  if (minecraftType === "bedrock" || minecraftType === "cracked" || username.startsWith(".") || username.startsWith("*")) {
+    return false;
+  }
+
+  return player.platform === "java" || minecraftType === "java";
+}
+
+function canUseElyByLookup(player: LeaderboardPlayer) {
+  const minecraftType = inferMinecraftType(player);
+  return player.skinProvider === "elyby" || minecraftType === "cracked";
+}
+
+function canUseOfflineLookup(player: LeaderboardPlayer) {
+  const minecraftType = inferMinecraftType(player);
+  return player.skinProvider === "offline" || minecraftType === "cracked" || minecraftType === "unknown";
+}
+
+function inferMinecraftType(player: LeaderboardPlayer): "java" | "bedrock" | "cracked" | "unknown" {
+  if (player.minecraftType === "java" || player.minecraftType === "bedrock" || player.minecraftType === "cracked") {
+    return player.minecraftType;
+  }
+
+  if (player.platform === "bedrock" || player.username.startsWith(".") || player.username.startsWith("*") || player.bedrockXuid || player.xuid) {
+    return "bedrock";
+  }
+
+  if (player.platform === "java") {
+    return "java";
+  }
+
+  return "unknown";
+}
+
+function expandSkinProviderTemplate(template: string, player: LeaderboardPlayer) {
+  const values: Record<string, string> = {
+    username: player.username,
+    uuid: player.uuid,
+    javaUuid: player.javaUuid || "",
+    bedrockXuid: player.bedrockXuid || player.xuid || "",
+    xuid: player.xuid || player.bedrockXuid || ""
+  };
+
+  return template.replace(/\{(username|uuid|javaUuid|bedrockXuid|xuid)\}/g, (_, key: string) => encodeURIComponent(values[key] || ""));
+}
+
+function isUsableSkinUrl(value: string) {
+  const trimmed = value.trim();
+  return trimmed.startsWith("https://") || trimmed.startsWith("http://") || trimmed.startsWith("data:image/");
+}
+
+function normalizeSkinUrl(value: string) {
+  return value.trim()
+    .replace(/^http:\/\/textures\.minecraft\.net\//, "https://textures.minecraft.net/")
+    .replace(/^http:\/\/ely\.by\//, "https://ely.by/");
 }
 
 function shouldFetchSkin(value?: string) {
