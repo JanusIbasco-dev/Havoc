@@ -7,9 +7,9 @@ type TopThreePlayersProps = {
 };
 
 const styles = [
-  { label: "Gold", className: "border-yellow-300/45 bg-yellow-300/10 text-yellow-100", glow: "shadow-[0_0_40px_rgba(245,196,81,0.16)]" },
-  { label: "Silver", className: "border-slate-200/35 bg-slate-200/10 text-slate-100", glow: "shadow-[0_0_40px_rgba(216,221,231,0.12)]" },
-  { label: "Bronze", className: "border-orange-300/35 bg-orange-300/10 text-orange-100", glow: "shadow-[0_0_40px_rgba(196,122,69,0.14)]" }
+  { label: "Gold", className: "min-h-[154px] border-yellow-300/40 bg-yellow-300/[0.08] text-yellow-100", glow: "shadow-[0_0_40px_rgba(245,196,81,0.14)]" },
+  { label: "Silver", className: "min-h-[138px] border-slate-200/32 bg-slate-200/[0.08] text-slate-100", glow: "shadow-[0_0_40px_rgba(216,221,231,0.1)]" },
+  { label: "Bronze", className: "min-h-[138px] border-orange-300/32 bg-orange-300/[0.08] text-orange-100", glow: "shadow-[0_0_40px_rgba(196,122,69,0.12)]" }
 ];
 
 export function TopThreePlayers({ players }: TopThreePlayersProps) {
@@ -23,20 +23,20 @@ export function TopThreePlayers({ players }: TopThreePlayersProps) {
           <Link
             href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
             key={`${player.uuid}-${player.season}`}
-            className={`neon-hover rounded-3xl border p-5 ${style.className} ${style.glow}`}
+            className={`neon-hover grid items-center rounded-3xl border p-5 ${style.className} ${style.glow}`}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-[0.2em]">{style.label}</span>
-              <span className="text-2xl font-black">#{index + 1}</span>
-            </div>
-            <div className="mt-5 flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <h3 className="truncate text-2xl font-black text-white">{player.username}</h3>
-                <p className="mt-1 text-sm opacity-80">{player.points} points</p>
-                <p className="text-sm opacity-70">{player.kills} kills</p>
+            <div className="grid grid-cols-[54px_minmax(0,1fr)_92px] items-center gap-4">
+              <div className="grid gap-2">
+                <span className="grid h-12 w-12 place-items-center rounded-lg border border-white/16 bg-black/30 text-xl font-black">#{index + 1}</span>
+                <span className="text-[0.62rem] font-black uppercase tracking-[0.16em] opacity-70">{style.label}</span>
+              </div>
+              <div className="min-w-0 self-center">
+                <h3 className="truncate text-[clamp(1.22rem,2.1vw,1.62rem)] font-black leading-tight text-white">{player.username}</h3>
+                <p className="mt-1 text-sm font-black opacity-85">{player.points} points</p>
+                <p className="text-xs font-bold uppercase tracking-[0.12em] opacity-60">{player.kills} kills</p>
               </div>
               <div className={`ranking-preview-frame top-rank-preview-frame ${rankingPreviewClass(index)}`}>
-                <PlayerBodyPreview player={player} size={132} className="ranking-body-preview top-rank-body-preview" />
+                <PlayerBodyPreview player={player} size={136} className="ranking-body-preview top-rank-body-preview" />
               </div>
             </div>
           </Link>

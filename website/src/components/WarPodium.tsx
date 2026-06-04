@@ -53,13 +53,13 @@ export function WarPodium({ players }: WarPodiumProps) {
           <Link
             key={`${player.uuid}-${player.season}`}
             href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
-            className={`group relative grid h-[132px] w-full overflow-hidden rounded-lg border bg-[#0a090d]/86 transition duration-200 hover:-translate-y-0.5 hover:border-purple-300/45 ${style.border} ${style.glow}`}
+            className={`group relative grid ${index === 0 ? "h-[148px]" : "h-[132px]"} w-full overflow-hidden rounded-lg border bg-[#0a090d]/86 transition duration-200 hover:-translate-y-0.5 hover:border-purple-300/45 ${style.border} ${style.glow}`}
           >
             <div className={`absolute inset-0 bg-gradient-to-r ${style.accent}`} />
             <div className={`absolute -left-5 top-0 h-full w-9 -skew-x-12 ${style.strip} opacity-90`} />
             <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
 
-            <div className="relative grid h-full grid-cols-[72px_minmax(0,1fr)_100px] items-center gap-2 px-4">
+            <div className="relative grid h-full grid-cols-[72px_minmax(0,1fr)_92px] items-center gap-4 px-4">
               <div className="grid gap-2">
                 <span className={`grid h-11 min-w-12 place-items-center rounded-md border border-white/16 bg-black/38 px-2 text-lg font-black ${style.text}`}>
                   {style.rank}
@@ -75,8 +75,8 @@ export function WarPodium({ players }: WarPodiumProps) {
               </div>
 
               <div className="flex justify-end">
-                <div className={`ranking-preview-frame ${index === 0 ? "ranking-preview-gold" : index === 1 ? "ranking-preview-silver" : "ranking-preview-bronze"}`}>
-                  <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                <div className={`ranking-preview-frame top-rank-preview-frame ${index === 0 ? "ranking-preview-gold" : index === 1 ? "ranking-preview-silver" : "ranking-preview-bronze"}`}>
+                  <PlayerBodyPreview player={player} size={136} className="ranking-body-preview top-rank-body-preview" />
                 </div>
               </div>
             </div>

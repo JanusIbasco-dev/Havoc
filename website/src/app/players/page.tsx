@@ -35,7 +35,7 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
             >
               <div className="flex items-center gap-4">
                 <div className="ranking-preview-frame">
-                  <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                  <PlayerBodyPreview player={player} size={118} className="ranking-body-preview" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate text-xl font-black text-white">{player.username}</h2>

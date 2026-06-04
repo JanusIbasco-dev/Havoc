@@ -72,21 +72,21 @@ export function LeaderboardExperience({ players }: LeaderboardExperienceProps) {
             {visiblePlayers.map((player) => {
               const rank = rankMap.get(player.uuid) || 0;
               return (
-                <tr key={`${player.uuid}-${player.season}`} className="border-t border-purple-500/12 transition hover:bg-purple-500/[0.06]">
-                  <td className="px-3 py-4 text-lg font-black text-purple-200">#{rank}</td>
-                  <td className="px-3 py-4">
-                    <Link className="flex items-center gap-3 font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
+                <tr key={`${player.uuid}-${player.season}`} className="h-[82px] border-t border-purple-500/12 transition hover:bg-purple-500/[0.06]">
+                  <td className="px-3 py-0 align-middle text-lg font-black text-purple-200">#{rank}</td>
+                  <td className="px-3 py-0 align-middle">
+                    <Link className="flex h-[82px] items-center gap-[18px] font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
                       <div className={`ranking-preview-frame ${rankingPreviewClass(rank)}`}>
-                        <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                        <PlayerBodyPreview player={player} size={118} className="ranking-body-preview" />
                       </div>
-                      <span>{player.username}</span>
+                      <span className="min-w-0 truncate">{player.username}</span>
                       <PlatformBadge platform={player.platform} compact />
                     </Link>
                   </td>
-                  <td className="px-3 py-4 text-right">{player.kills}</td>
-                  <td className="px-3 py-4 text-right text-rose-300">{player.deaths}</td>
-                  <td className="px-3 py-4 text-right text-lg font-black text-[var(--accent-strong)]">{player.points}</td>
-                  <td className="px-3 py-4 text-right">{formatHours(player.hoursOfGameplay)}</td>
+                  <td className="px-3 py-0 text-right align-middle">{player.kills}</td>
+                  <td className="px-3 py-0 text-right align-middle text-rose-300">{player.deaths}</td>
+                  <td className="px-3 py-0 text-right align-middle text-lg font-black text-[var(--accent-strong)]">{player.points}</td>
+                  <td className="px-3 py-0 text-right align-middle">{formatHours(player.hoursOfGameplay)}</td>
                 </tr>
               );
             })}

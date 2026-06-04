@@ -250,12 +250,12 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
         <tbody>
           {players.length > 0 ? (
             players.map((player, index) => (
-              <tr key={`${player.uuid}-${player.season}`} className="h-[76px] border-t border-purple-500/12 align-middle transition hover:bg-purple-500/[0.06]">
+              <tr key={`${player.uuid}-${player.season}`} className="h-[82px] border-t border-purple-500/12 align-middle transition hover:bg-purple-500/[0.06]">
                 <td className="px-4 py-0 align-middle font-black text-purple-200">#{index + 1}</td>
                 <td className="px-4 py-0 align-middle">
-                  <Link className="flex h-[76px] items-center gap-[14px] font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
+                  <Link className="flex h-[82px] items-center gap-[18px] font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
                     <div className={`ranking-preview-frame ${index === 0 ? "ranking-preview-gold" : index === 1 ? "ranking-preview-silver" : index === 2 ? "ranking-preview-bronze" : ""}`}>
-                      <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                      <PlayerBodyPreview player={player} size={118} className="ranking-body-preview" />
                     </div>
                     <span className="min-w-0 text-[clamp(0.86rem,1.4vw,1rem)] leading-none">{player.username}</span>
                   </Link>

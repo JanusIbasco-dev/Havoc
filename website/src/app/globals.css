@@ -149,26 +149,29 @@ a {
 .ranking-preview-frame {
   position: relative;
   display: grid;
-  width: 78px;
-  height: 70px;
+  width: 82px;
+  height: 64px;
   flex: 0 0 auto;
-  place-items: end center;
+  place-items: center;
   overflow: hidden;
-  transform: skewX(-10deg);
-  border: 1px solid rgba(216, 180, 254, 0.18);
-  border-radius: 8px;
+  transform: skewX(-6deg);
+  border: 1px solid rgba(216, 180, 254, 0.14);
+  border-radius: 10px;
   background:
-    linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(10, 9, 13, 0.92)),
-    radial-gradient(circle at 58% 28%, rgba(233, 213, 255, 0.18), transparent 46%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 24px rgba(139, 92, 246, 0.16);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(10, 9, 13, 0.92)),
+    radial-gradient(circle at 58% 34%, rgba(168, 85, 247, 0.12), transparent 50%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 18px rgba(168, 85, 247, 0.08),
+    0 0 18px rgba(139, 92, 246, 0.1);
 }
 
 .ranking-preview-frame::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: 12px;
-  background: rgba(168, 85, 247, 0.55);
+  width: 4px;
+  background: rgba(168, 85, 247, 0.42);
 }
 
 .ranking-preview-gold::before {
@@ -186,24 +189,24 @@ a {
 .ranking-body-preview {
   position: relative;
   z-index: 1;
-  width: 86px;
-  height: 98px;
+  width: 88px;
+  height: 116px;
   object-fit: contain;
   object-position: center top;
-  transform: translateY(22px) skewX(10deg) rotate(-4deg);
-  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.42));
+  transform: translateY(26px) skewX(6deg);
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.38));
   image-rendering: pixelated;
 }
 
 .top-rank-preview-frame {
-  width: 118px;
-  height: 128px;
+  width: 92px;
+  height: 78px;
 }
 
 .top-rank-body-preview {
-  width: 132px;
-  height: 164px;
-  transform: translateY(36px) skewX(10deg) rotate(-4deg);
+  width: 102px;
+  height: 136px;
+  transform: translateY(31px) skewX(6deg);
 }
 
 .profile-preview-showcase::before {

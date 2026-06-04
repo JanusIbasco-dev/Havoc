@@ -25,12 +25,12 @@ export function LeaderboardTable({ players }: LeaderboardTableProps) {
         </thead>
         <tbody>
           {players.map((player, index) => (
-            <tr key={`${player.uuid}-${player.season}`} className="border-t border-purple-500/20 transition hover:bg-purple-500/8">
-              <td className="px-3 py-4 font-black text-[var(--accent-strong)]">#{index + 1}</td>
-              <td className="px-3 py-3">
-                <Link className="flex items-center gap-3 hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
+            <tr key={`${player.uuid}-${player.season}`} className="h-[82px] border-t border-purple-500/20 transition hover:bg-purple-500/8">
+              <td className="px-3 py-0 align-middle font-black text-[var(--accent-strong)]">#{index + 1}</td>
+              <td className="px-3 py-0 align-middle">
+                <Link className="flex h-[82px] items-center gap-[18px] hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
                   <div className={`ranking-preview-frame ${rankingPreviewClass(index)}`}>
-                    <PlayerBodyPreview player={player} size={92} className="ranking-body-preview" />
+                    <PlayerBodyPreview player={player} size={118} className="ranking-body-preview" />
                   </div>
                   <div>
                     <div className="font-bold">{player.username}</div>
@@ -41,11 +41,11 @@ export function LeaderboardTable({ players }: LeaderboardTableProps) {
                   </div>
                 </Link>
               </td>
-              <td className="px-3 py-3 text-right">{player.kills}</td>
-              <td className="px-3 py-3 text-right text-rose-300">{player.deaths}</td>
-              <td className="px-3 py-3 text-right font-black text-purple-100">{player.points}</td>
-              <td className="px-3 py-3 text-right">{formatHours(player.hoursOfGameplay)}</td>
-              <td className="px-3 py-3 text-right">
+              <td className="px-3 py-0 text-right align-middle">{player.kills}</td>
+              <td className="px-3 py-0 text-right align-middle text-rose-300">{player.deaths}</td>
+              <td className="px-3 py-0 text-right align-middle font-black text-purple-100">{player.points}</td>
+              <td className="px-3 py-0 text-right align-middle">{formatHours(player.hoursOfGameplay)}</td>
+              <td className="px-3 py-0 text-right align-middle">
                 <Link
                   className="neon-hover inline-flex rounded-md border border-purple-400/35 bg-purple-950/35 px-3 py-2 text-xs font-bold text-purple-100"
                   href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
