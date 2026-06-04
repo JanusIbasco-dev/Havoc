@@ -8,6 +8,8 @@ public final class PlayerRecord {
     private String skinValue;
     private String skinSignature;
     private String skinUrl;
+    private String skinTextureUrl;
+    private String skinModel;
     private String skinProvider;
     private String platform = "java";
     private String xuid;
@@ -57,6 +59,22 @@ public final class PlayerRecord {
 
     public void skinUrl(String skinUrl) {
         this.skinUrl = skinUrl;
+    }
+
+    public String skinTextureUrl() {
+        return skinTextureUrl;
+    }
+
+    public void skinTextureUrl(String skinTextureUrl) {
+        this.skinTextureUrl = skinTextureUrl;
+    }
+
+    public String skinModel() {
+        return skinModel;
+    }
+
+    public void skinModel(String skinModel) {
+        this.skinModel = skinModel;
     }
 
     public String skinProvider() {

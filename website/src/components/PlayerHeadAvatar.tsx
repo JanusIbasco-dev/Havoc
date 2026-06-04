@@ -8,7 +8,7 @@ export type PlayerHeadAvatarSize = "table" | "top3" | "profile" | "small";
 
 type PlayerHeadAvatarPlayer = Pick<
   LeaderboardPlayer,
-  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
+  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureBase64" | "texturesProperty" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
 >;
 
 export type PlayerHeadAvatarProps = Partial<PlayerHeadAvatarPlayer> & {
@@ -54,7 +54,9 @@ export function PlayerHeadAvatar({ player, size = "profile", className = "", ...
           floodgateUuid: null,
           skinTextureUrl: null,
           skinUrl: null,
+          skinTextureBase64: null,
           skinTexture: null,
+          texturesProperty: null,
           skinTextureValue: null,
           skinProvider: "unknown",
           updatedAt: resolvedPlayer.updatedAt
@@ -102,7 +104,9 @@ function resolvePlayer(player: PlayerHeadAvatarProps["player"], props: Partial<P
     floodgateUuid: player?.floodgateUuid ?? props.floodgateUuid,
     skinTextureUrl: player?.skinTextureUrl ?? props.skinTextureUrl,
     skinUrl: player?.skinUrl ?? props.skinUrl,
+    skinTextureBase64: player?.skinTextureBase64 ?? props.skinTextureBase64,
     skinTexture: player?.skinTexture ?? props.skinTexture,
+    texturesProperty: player?.texturesProperty ?? props.texturesProperty,
     skinTextureValue: player?.skinTextureValue ?? props.skinTextureValue,
     skinProvider: player?.skinProvider || props.skinProvider,
     skinModel: player?.skinModel || props.skinModel,

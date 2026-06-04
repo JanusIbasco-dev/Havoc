@@ -100,6 +100,7 @@ public final class LeaderboardApiClient {
             player.addProperty("points", record.points());
             player.addProperty("kills", record.kills());
             player.addProperty("deaths", record.deaths());
+            addSkinPayload(player, recordSkinData(record));
             players.add(player);
         }
         payload.add("players", players);
@@ -214,7 +215,7 @@ public final class LeaderboardApiClient {
         payload.addProperty("points", record.points());
         payload.addProperty("kills", record.kills());
         payload.addProperty("deaths", record.deaths());
-        addSkinPayload(payload, new SkinData(record.skinValue(), record.skinSignature(), record.skinUrl(), record.skinProvider()));
+        addSkinPayload(payload, recordSkinData(record));
         payload.addProperty("timestamp", Instant.now().toString());
         return payload;
     }
@@ -223,30 +224,63 @@ public final class LeaderboardApiClient {
         JsonObject payload = new JsonObject();
         payload.addProperty("uuid", record.uuid().toString());
         payload.addProperty("username", record.username());
-        payload.addProperty("platform", record.platform() == null || record.platform().isBlank() ? "java" : record.platform());
+        String platform = record.platform() == null || record.platform().isBlank() ? "java" : record.platform();
+        payload.addProperty("platform", platform);
+        payload.addProperty("minecraftType", minecraftType(platform));
+        payload.addProperty("javaUuid", "java".equalsIgnoreCase(platform) ? record.uuid().toString() : null);
         payload.addProperty("xuid", record.xuid());
+        payload.addProperty("bedrockXuid", record.xuid());
         payload.addProperty("floodgateUuid", record.floodgateUuid());
         return payload;
     }
 
     private JsonObject storedSkinPayload(PlayerRecord record) {
-        return skinPayload(new SkinData(record.skinValue(), record.skinSignature(), record.skinUrl(), record.skinProvider()));
+        return skinPayload(recordSkinData(record));
+    }
+
+    private SkinData recordSkinData(PlayerRecord record) {
+        return new SkinData(
+                record.skinValue(),
+                record.skinSignature(),
+                record.skinUrl(),
+                record.skinTextureUrl(),
+                record.skinModel(),
+                record.skinProvider()
+        );
     }
 
     private void addSkinPayload(JsonObject payload, SkinData skinData) {
         payload.add("skin", skinPayload(skinData));
         payload.addProperty("skinUrl", skinData.skinUrl());
+        payload.addProperty("skinTextureUrl", skinData.textureUrl());
+        payload.addProperty("skinTextureBase64", skinData.textureValue());
+        payload.addProperty("texturesProperty", skinData.textureValue());
         payload.addProperty("skinTextureValue", skinData.textureValue());
         payload.addProperty("skinTextureSignature", skinData.signature());
+        payload.addProperty("skinModel", skinData.model());
         payload.addProperty("skinProvider", skinData.provider());
     }
 
     private JsonObject skinPayload(SkinData skinData) {
         JsonObject skin = new JsonObject();
         skin.addProperty("textureValue", skinData.textureValue());
+        skin.addProperty("texturesProperty", skinData.textureValue());
         skin.addProperty("signature", skinData.signature());
         skin.addProperty("skinUrl", skinData.skinUrl());
+        skin.addProperty("textureUrl", skinData.textureUrl());
+        skin.addProperty("skinTextureUrl", skinData.textureUrl());
+        skin.addProperty("model", skinData.model());
         skin.addProperty("provider", skinData.provider());
         return skin;
+    }
+
+    private String minecraftType(String platform) {
+        if ("bedrock".equalsIgnoreCase(platform)) {
+            return "bedrock";
+        }
+        if ("offline".equalsIgnoreCase(platform) || "cracked".equalsIgnoreCase(platform)) {
+            return platform.toLowerCase();
+        }
+        return "java";
     }
 }

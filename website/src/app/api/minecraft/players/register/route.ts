@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { unauthorized, badRequest, ok, serverError } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { bedrockXuidFromPayload, floodgateUuidFromPayload, javaUuidFromPayload, minecraftTypeFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureFromPayload, skinTextureSignatureFromPayload, skinTextureUrlFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
+import { bedrockXuidFromPayload, floodgateUuidFromPayload, javaUuidFromPayload, minecraftTypeFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinModelFromPayload, skinProviderFromPayload, skinTextureBase64FromPayload, skinTextureFromPayload, skinTextureSignatureFromPayload, skinTextureUrlFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, texturesPropertyFromPayload, xuidFromPayload } from "@/lib/payload";
 import { upsertPlayer } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -30,9 +30,12 @@ export async function POST(request: NextRequest) {
       skinTextureUrl: skinTextureUrlFromPayload(payload),
       skinUrl: skinUrlFromPayload(payload),
       skinTexture: skinTextureFromPayload(payload),
+      skinTextureBase64: skinTextureBase64FromPayload(payload),
+      texturesProperty: texturesPropertyFromPayload(payload),
       skinTextureValue: skinTextureValueFromPayload(payload),
       skinTextureSignature: skinTextureSignatureFromPayload(payload),
       skinProvider: skinProviderFromPayload(payload),
+      skinModel: skinModelFromPayload(payload),
       playtimeHours: playtimeFromPayload(payload),
       season: seasonFromPayload(payload),
       firstJoin: typeof payload.firstJoin === "string" ? payload.firstJoin : typeof payload.firstJoinTimestamp === "string" ? payload.firstJoinTimestamp : undefined

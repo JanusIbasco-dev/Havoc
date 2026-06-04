@@ -2,6 +2,7 @@ import { WithId } from "mongodb";
 import { getDatabase } from "@/lib/mongodb";
 import { resolveSeasonNumber } from "@/lib/seasons";
 import { skinModelFromTextureValue, skinUrlFromTextureValue } from "@/lib/skin";
+import { resolvePlayerSkin } from "@/lib/skin-resolver";
 import type { LeaderboardPlayer, PlayerActivityEvent, PlayerHistoryEvent, PlayerProfile } from "@/types/player";
 
 const collectionName = "players";
@@ -10,20 +11,24 @@ type PlayerDocument = {
   uuid: string;
   username: string;
   platform?: "java" | "bedrock";
-  minecraftType?: "java" | "bedrock" | "cracked" | "unknown";
+  minecraftType?: "java" | "bedrock" | "cracked" | "offline" | "unknown";
   javaUuid?: string | null;
   bedrockXuid?: string | null;
   xuid?: string | null;
   floodgateUuid?: string | null;
   skinTextureUrl?: string | null;
   skinUrl?: string | null;
+  skinTextureBase64?: string | null;
   skinTexture?: string | null;
+  texturesProperty?: string | null;
   skinTextureValue?: string | null;
   skinTextureSignature?: string | null;
-  skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
+  skinProvider?: "mojang" | "bedrock" | "floodgate" | "elyby" | "manual" | "offline" | "default" | "unknown";
   skinModel?: "classic" | "slim";
   skinUpdatedAt?: string;
   lastSkinFetchAt?: string;
+  lastSkinResolvedAt?: string;
+  skinResolveError?: string | null;
   kills: number;
   deaths: number;
   points: number;
@@ -211,6 +216,20 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     setFields.skinUpdatedAt = now;
     setFields.lastSkinFetchAt = now;
   }
+  if (typeof player.skinTextureBase64 === "string" && player.skinTextureBase64.trim()) {
+    setFields.skinTextureBase64 = player.skinTextureBase64.trim();
+    setFields.texturesProperty = player.skinTextureBase64.trim();
+    setFields.skinTextureValue = player.skinTextureBase64.trim();
+    setFields.skinUpdatedAt = now;
+    setFields.lastSkinFetchAt = now;
+  }
+  if (typeof player.texturesProperty === "string" && player.texturesProperty.trim()) {
+    setFields.texturesProperty = player.texturesProperty.trim();
+    setFields.skinTextureBase64 = player.texturesProperty.trim();
+    setFields.skinTextureValue = player.texturesProperty.trim();
+    setFields.skinUpdatedAt = now;
+    setFields.lastSkinFetchAt = now;
+  }
   if (typeof player.skinUrl === "string" && player.skinUrl.trim()) {
     setFields.skinUrl = player.skinUrl.trim();
     setFields.skinUpdatedAt = now;
@@ -230,7 +249,7 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     setFields.skinTextureSignature = player.skinTextureSignature.trim();
     setFields.skinUpdatedAt = now;
   }
-  if (player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown") {
+  if (player.skinProvider === "mojang" || player.skinProvider === "bedrock" || player.skinProvider === "floodgate" || player.skinProvider === "elyby" || player.skinProvider === "manual" || player.skinProvider === "offline" || player.skinProvider === "default" || player.skinProvider === "unknown") {
     setFields.skinProvider = player.skinProvider;
     setFields.skinUpdatedAt = now;
   }
@@ -239,7 +258,7 @@ export async function upsertPlayer(player: Partial<LeaderboardPlayer> & { uuid: 
     setFields.xuid = typeof player.xuid === "string" && player.xuid.trim() ? player.xuid.trim() : null;
     setFields.floodgateUuid = typeof player.floodgateUuid === "string" && player.floodgateUuid.trim() ? player.floodgateUuid.trim() : null;
   }
-  if (player.minecraftType === "java" || player.minecraftType === "bedrock" || player.minecraftType === "cracked" || player.minecraftType === "unknown") {
+  if (player.minecraftType === "java" || player.minecraftType === "bedrock" || player.minecraftType === "cracked" || player.minecraftType === "offline" || player.minecraftType === "unknown") {
     setFields.minecraftType = player.minecraftType;
   }
   if (typeof player.javaUuid === "string" && player.javaUuid.trim()) {
@@ -303,11 +322,13 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
       $set: {
         username: player.username,
         ...(typeof player.skinTextureUrl === "string" && player.skinTextureUrl.trim() ? { skinTextureUrl: player.skinTextureUrl.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
+        ...(typeof player.skinTextureBase64 === "string" && player.skinTextureBase64.trim() ? { skinTextureBase64: player.skinTextureBase64.trim(), texturesProperty: player.skinTextureBase64.trim(), skinTextureValue: player.skinTextureBase64.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
+        ...(typeof player.texturesProperty === "string" && player.texturesProperty.trim() ? { texturesProperty: player.texturesProperty.trim(), skinTextureBase64: player.texturesProperty.trim(), skinTextureValue: player.texturesProperty.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
         ...(typeof player.skinUrl === "string" && player.skinUrl.trim() ? { skinUrl: player.skinUrl.trim(), skinUpdatedAt: now } : {}),
         ...(typeof player.skinTexture === "string" && player.skinTexture.trim() ? { skinTexture: player.skinTexture.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
         ...(typeof player.skinTextureValue === "string" && player.skinTextureValue.trim() ? { skinTextureValue: player.skinTextureValue.trim(), skinUpdatedAt: now, lastSkinFetchAt: now } : {}),
         ...(typeof player.skinTextureSignature === "string" && player.skinTextureSignature.trim() ? { skinTextureSignature: player.skinTextureSignature.trim(), skinUpdatedAt: now } : {}),
-        ...(player.skinProvider === "mojang" || player.skinProvider === "elyby" || player.skinProvider === "offline" || player.skinProvider === "unknown" ? { skinProvider: player.skinProvider, skinUpdatedAt: now } : {}),
+        ...(player.skinProvider === "mojang" || player.skinProvider === "bedrock" || player.skinProvider === "floodgate" || player.skinProvider === "elyby" || player.skinProvider === "manual" || player.skinProvider === "offline" || player.skinProvider === "default" || player.skinProvider === "unknown" ? { skinProvider: player.skinProvider, skinUpdatedAt: now } : {}),
         ...(player.platform === "java" || player.platform === "bedrock"
           ? {
               platform: player.platform,
@@ -315,7 +336,7 @@ export async function setPlayerStats(player: Partial<LeaderboardPlayer> & { uuid
               floodgateUuid: typeof player.floodgateUuid === "string" && player.floodgateUuid.trim() ? player.floodgateUuid.trim() : null
             }
           : {}),
-        ...(player.minecraftType === "java" || player.minecraftType === "bedrock" || player.minecraftType === "cracked" || player.minecraftType === "unknown" ? { minecraftType: player.minecraftType } : {}),
+        ...(player.minecraftType === "java" || player.minecraftType === "bedrock" || player.minecraftType === "cracked" || player.minecraftType === "offline" || player.minecraftType === "unknown" ? { minecraftType: player.minecraftType } : {}),
         ...(typeof player.javaUuid === "string" && player.javaUuid.trim() ? { javaUuid: player.javaUuid.trim() } : {}),
         ...(typeof player.bedrockXuid === "string" && player.bedrockXuid.trim() ? { bedrockXuid: player.bedrockXuid.trim() } : {}),
         ...(player.skinModel === "classic" || player.skinModel === "slim" ? { skinModel: player.skinModel } : {}),
@@ -480,13 +501,17 @@ function toLeaderboardPlayer(player: WithId<PlayerDocument> | PlayerDocument): L
     floodgateUuid: player.floodgateUuid ?? "",
     skinTextureUrl: player.skinTextureUrl ?? "",
     skinUrl: player.skinUrl ?? "",
+    skinTextureBase64: player.skinTextureBase64 ?? "",
     skinTexture: player.skinTexture ?? "",
+    texturesProperty: player.texturesProperty ?? "",
     skinTextureValue: player.skinTextureValue ?? "",
     skinTextureSignature: player.skinTextureSignature ?? "",
     skinProvider: player.skinProvider ?? "unknown",
     skinModel: player.skinModel ?? "classic",
     skinUpdatedAt: player.skinUpdatedAt,
     lastSkinFetchAt: player.lastSkinFetchAt,
+    lastSkinResolvedAt: player.lastSkinResolvedAt,
+    skinResolveError: player.skinResolveError,
     kills: player.kills ?? 0,
     deaths: player.deaths ?? 0,
     points: player.points ?? 0,
@@ -501,134 +526,28 @@ function toLeaderboardPlayer(player: WithId<PlayerDocument> | PlayerDocument): L
 }
 
 async function cacheResolvedSkin(player: LeaderboardPlayer): Promise<LeaderboardPlayer> {
-  const now = new Date().toISOString();
-  const cachedSkinUrl = typeof player.skinUrl === "string" && player.skinUrl.trim() ? player.skinUrl.trim() : "";
-  const cachedTexture = typeof player.skinTexture === "string" && player.skinTexture.trim() ? player.skinTexture.trim() : "";
-  const cachedTextureValue = typeof player.skinTextureValue === "string" && player.skinTextureValue.trim() ? player.skinTextureValue.trim() : "";
-
-  if (cachedSkinUrl || cachedTexture) {
+  if (!shouldFetchSkin(player.lastSkinResolvedAt || player.lastSkinFetchAt) && (player.skinTextureUrl || player.skinTexture || player.skinTextureValue || player.texturesProperty || player.skinTextureBase64 || (player.skinProvider === "manual" && player.skinUrl))) {
     return player;
   }
 
-  if (cachedTextureValue) {
-    const decodedSkinUrl = skinUrlFromTextureValue(cachedTextureValue);
-    const decodedModel = skinModelFromTextureValue(cachedTextureValue);
-    if (decodedSkinUrl) {
-      await updateCachedSkin(player, {
-        skinUrl: decodedSkinUrl,
-        ...(decodedModel ? { skinModel: decodedModel } : {}),
-        skinProvider: player.skinProvider === "unknown" ? "offline" : player.skinProvider,
-        skinUpdatedAt: now,
-        lastSkinFetchAt: now
-      });
-      return { ...player, skinUrl: decodedSkinUrl, skinModel: decodedModel ?? player.skinModel, skinProvider: player.skinProvider === "unknown" ? "offline" : player.skinProvider, skinUpdatedAt: now, lastSkinFetchAt: now };
-    }
-  }
-
-  if (!shouldFetchSkin(player.lastSkinFetchAt)) {
-    return player;
-  }
-
-  const savedJavaUuid = normalizeUuid(player.javaUuid || "");
-  if (savedJavaUuid) {
-    const resolved = await fetchMojangSkinByUuid(savedJavaUuid);
-    const skinUrl = resolved?.skinUrl || `https://crafatar.com/skins/${savedJavaUuid}`;
-    const fields = {
-      skinUrl,
-      javaUuid: savedJavaUuid,
-      minecraftType: "java" as const,
-      skinProvider: "mojang" as const,
-      ...(resolved?.skinTextureValue ? { skinTextureValue: resolved.skinTextureValue } : {}),
-      ...(resolved?.skinTextureSignature ? { skinTextureSignature: resolved.skinTextureSignature } : {}),
-      ...(resolved?.skinModel ? { skinModel: resolved.skinModel } : {}),
-      skinUpdatedAt: now,
-      lastSkinFetchAt: now
-    };
-    await updateCachedSkin(player, fields);
-    return { ...player, ...fields };
-  }
-
-  const mojangUuid = await resolveMojangUuidFromUsername(player);
-  if (mojangUuid) {
-    const resolved = await fetchMojangSkinByUuid(mojangUuid);
-    const skinUrl = resolved?.skinUrl || `https://crafatar.com/skins/${mojangUuid}`;
-    const fields = {
-      skinUrl,
-      javaUuid: mojangUuid,
-      minecraftType: "java" as const,
-      platform: "java" as const,
-      skinProvider: "mojang" as const,
-      ...(resolved?.skinTextureValue ? { skinTextureValue: resolved.skinTextureValue } : {}),
-      ...(resolved?.skinTextureSignature ? { skinTextureSignature: resolved.skinTextureSignature } : {}),
-      ...(resolved?.skinModel ? { skinModel: resolved.skinModel } : {}),
-      skinUpdatedAt: now,
-      lastSkinFetchAt: now
-    };
-    await updateCachedSkin(player, fields);
-    return { ...player, ...fields };
-  }
-
-  const bedrockXuid = (player.bedrockXuid || player.xuid || "").trim();
-  if (bedrockXuid) {
-    const bedrockSkin = await fetchBedrockSkin(bedrockXuid);
-    if (bedrockSkin?.skinUrl) {
-      await updateCachedSkin(player, {
-        bedrockXuid,
-        minecraftType: "bedrock",
-        skinUrl: bedrockSkin.skinUrl,
-        skinTextureValue: bedrockSkin.value,
-        skinModel: bedrockSkin.model,
-        skinUpdatedAt: now,
-        lastSkinFetchAt: now
-      });
-      return {
-        ...player,
-        bedrockXuid,
-        minecraftType: "bedrock",
-        skinUrl: bedrockSkin.skinUrl,
-        skinTextureValue: bedrockSkin.value,
-        skinModel: bedrockSkin.model,
-        skinUpdatedAt: now,
-        lastSkinFetchAt: now
-      };
-    }
-
-    await updateCachedSkin(player, { bedrockXuid, minecraftType: "bedrock", lastSkinFetchAt: now });
-    return { ...player, bedrockXuid, minecraftType: "bedrock", lastSkinFetchAt: now };
-  }
-
-  const elyBySkin = await fetchElyBySkin(player);
-  if (elyBySkin?.skinUrl) {
-    const fields = {
-      skinUrl: elyBySkin.skinUrl,
-      skinTextureValue: elyBySkin.skinTextureValue,
-      skinTextureSignature: elyBySkin.skinTextureSignature,
-      skinModel: elyBySkin.skinModel,
-      skinProvider: "elyby" as const,
-      skinUpdatedAt: now,
-      lastSkinFetchAt: now
-    };
-    await updateCachedSkin(player, fields);
-    return { ...player, ...fields };
-  }
-
-  const offlineSkin = await fetchConfiguredOfflineSkin(player);
-  if (offlineSkin?.skinUrl) {
-    const fields = {
-      skinUrl: offlineSkin.skinUrl,
-      skinTextureValue: offlineSkin.skinTextureValue,
-      skinModel: offlineSkin.skinModel,
-      skinProvider: "offline" as const,
-      skinUpdatedAt: now,
-      lastSkinFetchAt: now
-    };
-    await updateCachedSkin(player, fields);
-    return { ...player, ...fields };
-  }
-
-  const inferredType = inferMinecraftType(player);
-  await updateCachedSkin(player, { minecraftType: inferredType, lastSkinFetchAt: now });
-  return { ...player, minecraftType: inferredType, lastSkinFetchAt: now };
+  const resolved = await resolvePlayerSkin(player);
+  const fields: Partial<PlayerDocument> = {
+    skinUrl: resolved.skinUrl,
+    skinTextureUrl: resolved.skinTextureUrl,
+    skinModel: resolved.skinModel,
+    skinProvider: resolved.skinProvider,
+    minecraftType: resolved.minecraftType,
+    lastSkinFetchAt: resolved.lastSkinResolvedAt,
+    lastSkinResolvedAt: resolved.lastSkinResolvedAt,
+    skinUpdatedAt: resolved.lastSkinResolvedAt,
+    skinResolveError: resolved.skinResolveError ?? null,
+    ...(resolved.skinTextureBase64 ? { skinTextureBase64: resolved.skinTextureBase64 } : {}),
+    ...(resolved.texturesProperty ? { texturesProperty: resolved.texturesProperty } : {}),
+    ...(resolved.skinTextureValue ? { skinTextureValue: resolved.skinTextureValue } : {}),
+    ...(resolved.skinTextureSignature ? { skinTextureSignature: resolved.skinTextureSignature } : {})
+  };
+  await updateCachedSkin(player, fields);
+  return { ...player, ...fields, season: player.season };
 }
 
 async function updateCachedSkin(player: LeaderboardPlayer, fields: Partial<PlayerDocument>) {

@@ -38,6 +38,14 @@ export function skinTextureValueFromPayload(payload: Record<string, unknown>) {
   return stringFromPayload(payload, "skinTextureValue") || stringFromNestedSkin(payload, "textureValue");
 }
 
+export function skinTextureBase64FromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "skinTextureBase64") || stringFromPayload(payload, "texturesProperty") || stringFromNestedSkin(payload, "texturesProperty");
+}
+
+export function texturesPropertyFromPayload(payload: Record<string, unknown>) {
+  return stringFromPayload(payload, "texturesProperty") || stringFromPayload(payload, "skinTextureBase64") || stringFromNestedSkin(payload, "texturesProperty");
+}
+
 export function skinTextureFromPayload(payload: Record<string, unknown>) {
   const directTexture = stringFromPayload(payload, "skinTexture") || stringFromNestedSkin(payload, "texture");
   return directTexture && isUsableSkinUrl(directTexture) ? normalizeSkinUrl(directTexture) : null;
@@ -49,7 +57,7 @@ export function skinTextureSignatureFromPayload(payload: Record<string, unknown>
 
 export function skinProviderFromPayload(payload: Record<string, unknown>) {
   const provider = stringFromPayload(payload, "skinProvider") || stringFromNestedSkin(payload, "provider");
-  return provider === "mojang" || provider === "elyby" || provider === "offline" || provider === "unknown" ? provider : undefined;
+  return provider === "mojang" || provider === "bedrock" || provider === "floodgate" || provider === "elyby" || provider === "manual" || provider === "offline" || provider === "default" || provider === "unknown" ? provider : undefined;
 }
 
 export function platformFromPayload(payload: Record<string, unknown>) {
@@ -59,7 +67,12 @@ export function platformFromPayload(payload: Record<string, unknown>) {
 
 export function minecraftTypeFromPayload(payload: Record<string, unknown>) {
   const minecraftType = stringFromPayload(payload, "minecraftType") || stringFromPayload(payload, "type");
-  return minecraftType === "java" || minecraftType === "bedrock" || minecraftType === "cracked" || minecraftType === "unknown" ? minecraftType : undefined;
+  return minecraftType === "java" || minecraftType === "bedrock" || minecraftType === "cracked" || minecraftType === "offline" || minecraftType === "unknown" ? minecraftType : undefined;
+}
+
+export function skinModelFromPayload(payload: Record<string, unknown>) {
+  const model = stringFromPayload(payload, "skinModel") || stringFromNestedSkin(payload, "model");
+  return model === "slim" || model === "classic" ? model : undefined;
 }
 
 export function javaUuidFromPayload(payload: Record<string, unknown>) {

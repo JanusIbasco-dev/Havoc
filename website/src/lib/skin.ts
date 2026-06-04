@@ -2,7 +2,7 @@ import type { LeaderboardPlayer } from "@/types/player";
 
 type SkinResolverPlayer = Pick<
   LeaderboardPlayer,
-  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
+  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureBase64" | "texturesProperty" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
 >;
 
 export type SkinSource = {
@@ -133,7 +133,7 @@ function defaultHeadIdentifier(player: SkinResolverPlayer) {
 }
 
 function getPlayerHeadSkinSource(player: SkinResolverPlayer) {
-  const storedSkin = rawSkinUrl(player.skinTextureUrl) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureValue)) || rawSkinUrl(player.skinTexture) || rawSkinUrl(player.skinUrl);
+  const storedSkin = rawSkinUrl(player.skinTextureUrl) || rawSkinUrl(skinUrlFromTextureValue(player.texturesProperty)) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureBase64)) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureValue)) || rawSkinUrl(player.skinTexture) || rawSkinUrl(player.skinUrl);
   if (storedSkin) {
     return normalizeSkinUrl(storedSkin);
   }
@@ -147,7 +147,7 @@ function getPlayerHeadSkinSource(player: SkinResolverPlayer) {
 }
 
 function getPlayerBodyRenderSource(player: SkinResolverPlayer) {
-  return rawSkinUrl(player.skinTextureUrl) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureValue)) || rawSkinUrl(player.skinTexture) || rawSkinUrl(player.skinUrl);
+  return rawSkinUrl(player.skinTextureUrl) || rawSkinUrl(skinUrlFromTextureValue(player.texturesProperty)) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureBase64)) || rawSkinUrl(skinUrlFromTextureValue(player.skinTextureValue)) || rawSkinUrl(player.skinTexture) || rawSkinUrl(player.skinUrl);
 }
 
 function renderIdentifierFromRawSkinSource(value: string) {

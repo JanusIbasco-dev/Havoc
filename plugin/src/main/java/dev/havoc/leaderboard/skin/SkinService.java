@@ -33,6 +33,7 @@ public final class SkinService {
         String textureValue = textureProperty == null ? null : textureProperty.getValue();
         String signature = textureProperty == null ? null : textureProperty.getSignature();
         String skinUrl = skinUrlFromProfile(profile);
+        String skinModel = skinModelFromTextureValue(textureValue);
 
         if (skinUrl == null && textureValue != null) {
             skinUrl = skinUrlFromTextureValue(textureValue);
@@ -47,7 +48,7 @@ public final class SkinService {
             }
         }
 
-        return new SkinData(textureValue, signature, skinUrl, provider);
+        return new SkinData(textureValue, signature, skinUrl, skinUrl, skinModel, provider);
     }
 
     private static ProfileProperty textureProperty(com.destroystokyo.paper.profile.PlayerProfile profile) {
@@ -70,17 +71,45 @@ public final class SkinService {
 
     private static String skinUrlFromTextureValue(String textureValue) {
         try {
-            String decoded = new String(Base64.getDecoder().decode(textureValue), StandardCharsets.UTF_8);
-            JsonObject root = JsonParser.parseString(decoded).getAsJsonObject();
-            JsonObject textures = root.getAsJsonObject("textures");
-            if (textures == null || !textures.has("SKIN")) {
+            JsonObject skin = skinObjectFromTextureValue(textureValue);
+            if (skin == null) {
                 return null;
             }
-            JsonObject skin = textures.getAsJsonObject("SKIN");
             return skin.has("url") ? normalizeSkinUrl(skin.get("url").getAsString()) : null;
         } catch (RuntimeException ignored) {
             return null;
         }
+    }
+
+    private static String skinModelFromTextureValue(String textureValue) {
+        try {
+            JsonObject skin = skinObjectFromTextureValue(textureValue);
+            if (skin == null || !skin.has("metadata")) {
+                return "classic";
+            }
+
+            JsonObject metadata = skin.getAsJsonObject("metadata");
+            if (metadata != null && metadata.has("model") && "slim".equalsIgnoreCase(metadata.get("model").getAsString())) {
+                return "slim";
+            }
+        } catch (RuntimeException ignored) {
+            return "classic";
+        }
+        return "classic";
+    }
+
+    private static JsonObject skinObjectFromTextureValue(String textureValue) {
+        if (textureValue == null || textureValue.isBlank()) {
+            return null;
+        }
+
+        String decoded = new String(Base64.getDecoder().decode(textureValue), StandardCharsets.UTF_8);
+        JsonObject root = JsonParser.parseString(decoded).getAsJsonObject();
+        JsonObject textures = root.getAsJsonObject("textures");
+        if (textures == null || !textures.has("SKIN")) {
+            return null;
+        }
+        return textures.getAsJsonObject("SKIN");
     }
 
     private static String skinUrlFromElyBy(String username) {

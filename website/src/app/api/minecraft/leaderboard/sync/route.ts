@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { badRequest, ok, serverError, unauthorized } from "@/lib/api-response";
 import { isAuthorized } from "@/lib/auth";
-import { bedrockXuidFromPayload, floodgateUuidFromPayload, javaUuidFromPayload, minecraftTypeFromPayload, numberFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinProviderFromPayload, skinTextureFromPayload, skinTextureSignatureFromPayload, skinTextureUrlFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, xuidFromPayload } from "@/lib/payload";
+import { bedrockXuidFromPayload, floodgateUuidFromPayload, javaUuidFromPayload, minecraftTypeFromPayload, numberFromPayload, platformFromPayload, playtimeFromPayload, requireString, seasonFromPayload, skinModelFromPayload, skinProviderFromPayload, skinTextureBase64FromPayload, skinTextureFromPayload, skinTextureSignatureFromPayload, skinTextureUrlFromPayload, skinTextureValueFromPayload, skinUrlFromPayload, texturesPropertyFromPayload, xuidFromPayload } from "@/lib/payload";
 import { setPlayerStats } from "@/lib/players";
 
 export async function POST(request: NextRequest) {
@@ -38,9 +38,12 @@ export async function POST(request: NextRequest) {
         skinTextureUrl: skinTextureUrlFromPayload(player),
         skinUrl: skinUrlFromPayload(player),
         skinTexture: skinTextureFromPayload(player),
+        skinTextureBase64: skinTextureBase64FromPayload(player),
+        texturesProperty: texturesPropertyFromPayload(player),
         skinTextureValue: skinTextureValueFromPayload(player),
         skinTextureSignature: skinTextureSignatureFromPayload(player),
         skinProvider: skinProviderFromPayload(player),
+        skinModel: skinModelFromPayload(player),
         kills: numberFromPayload(player, "kills"),
         deaths: numberFromPayload(player, "deaths"),
         points: numberFromPayload(player, "points"),

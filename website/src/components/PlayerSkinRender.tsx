@@ -4,14 +4,16 @@ type PlayerSkinRenderProps = {
   uuid: string;
   username: string;
   platform?: "java" | "bedrock";
-  minecraftType?: "java" | "bedrock" | "cracked" | "unknown";
+  minecraftType?: "java" | "bedrock" | "cracked" | "offline" | "unknown";
   javaUuid?: string | null;
   bedrockXuid?: string | null;
   xuid?: string | null;
   skinUrl?: string | null;
   skinTexture?: string | null;
+  skinTextureBase64?: string | null;
+  texturesProperty?: string | null;
   skinTextureValue?: string | null;
-  skinProvider?: "mojang" | "elyby" | "offline" | "unknown";
+  skinProvider?: "mojang" | "bedrock" | "floodgate" | "elyby" | "manual" | "default" | "offline" | "unknown";
   skinModel?: "classic" | "slim";
   compact?: boolean;
   podium?: boolean;

@@ -3,7 +3,7 @@ import type { LeaderboardPlayer } from "@/types/player";
 
 type PlayerBodyPreviewPlayer = Pick<
   LeaderboardPlayer,
-  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
+  "uuid" | "username" | "platform" | "minecraftType" | "javaUuid" | "bedrockXuid" | "xuid" | "floodgateUuid" | "skinTextureUrl" | "skinUrl" | "skinTexture" | "skinTextureBase64" | "texturesProperty" | "skinTextureValue" | "skinProvider" | "skinModel" | "updatedAt"
 >;
 
 type PlayerBodyPreviewProps = {
