@@ -19,8 +19,14 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
+  min-width: 0;
+  overflow-x: hidden;
   background:
     linear-gradient(90deg, rgba(8, 8, 10, 0.75) 0%, rgba(8, 8, 10, 0.61) 46%, rgba(8, 8, 10, 0.38) 100%),
     linear-gradient(180deg, rgba(8, 8, 10, 0.56) 0%, rgba(8, 8, 10, 0.78) 100%),
@@ -376,4 +382,51 @@ a {
   border-radius: 999px;
   background: #fff7ad;
   animation: ceremony-firework 4.8s ease-out infinite;
+}
+
+@media (max-width: 640px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .profile-head-avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+  .profile-preview-showcase {
+    min-height: clamp(260px, 82vw, 330px);
+    border-radius: 10px;
+  }
+
+  .profile-preview-showcase::before {
+    inset: 14px;
+    border-radius: 8px;
+  }
+
+  .profile-body-preview {
+    width: min(220px, 72vw);
+    height: min(240px, 72vw);
+  }
+
+  .ranking-preview-frame {
+    width: 66px;
+    height: 56px;
+    border-radius: 8px;
+  }
+
+  .ranking-body-preview {
+    width: 76px;
+    height: 104px;
+  }
+
+  .top-rank-preview-frame {
+    width: 70px;
+    height: 62px;
+  }
+
+  .top-rank-body-preview {
+    width: 82px;
+    height: 112px;
+  }
 }

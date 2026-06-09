@@ -53,15 +53,15 @@ export function WarPodium({ players }: WarPodiumProps) {
           <Link
             key={`${player.uuid}-${player.season}`}
             href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
-            className={`group relative grid ${index === 0 ? "h-[148px]" : "h-[132px]"} w-full overflow-hidden rounded-lg border bg-[#0a090d]/86 transition duration-200 hover:-translate-y-0.5 hover:border-purple-300/45 ${style.border} ${style.glow}`}
+            className={`group relative grid ${index === 0 ? "min-h-[138px] sm:h-[148px]" : "min-h-[124px] sm:h-[132px]"} w-full min-w-0 overflow-hidden rounded-lg border bg-[#0a090d]/86 transition duration-200 hover:-translate-y-0.5 hover:border-purple-300/45 ${style.border} ${style.glow}`}
           >
             <div className={`absolute inset-0 bg-gradient-to-r ${style.accent}`} />
             <div className={`absolute -left-5 top-0 h-full w-9 -skew-x-12 ${style.strip} opacity-90`} />
             <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
 
-            <div className="relative grid h-full grid-cols-[72px_minmax(0,1fr)_92px] items-center gap-4 px-4">
+            <div className="relative grid h-full grid-cols-[52px_minmax(0,1fr)_70px] items-center gap-3 px-3 sm:grid-cols-[72px_minmax(0,1fr)_92px] sm:gap-4 sm:px-4">
               <div className="grid gap-2">
-                <span className={`grid h-11 min-w-12 place-items-center rounded-md border border-white/16 bg-black/38 px-2 text-lg font-black ${style.text}`}>
+                <span className={`grid h-10 min-w-11 place-items-center rounded-md border border-white/16 bg-black/38 px-2 text-base font-black sm:h-11 sm:min-w-12 sm:text-lg ${style.text}`}>
                   {style.rank}
                 </span>
                 <span className="text-[0.62rem] font-black uppercase leading-tight tracking-[0.12em] text-purple-100/50">{style.title}</span>
@@ -71,7 +71,7 @@ export function WarPodium({ players }: WarPodiumProps) {
                 <h3 className="max-w-full break-words text-[clamp(0.98rem,1.75vw,1.18rem)] font-black leading-tight text-white" title={player.username}>
                   {player.username}
                 </h3>
-                <p className="mt-1 text-sm font-black text-purple-50/74">{player.points} Points</p>
+                <p className="mt-1 text-xs font-black text-purple-50/74 sm:text-sm">{player.points} Points</p>
               </div>
 
               <div className="flex justify-end">

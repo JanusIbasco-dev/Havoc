@@ -28,12 +28,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <div className="ember-field pointer-events-none fixed inset-0 opacity-24" />
       <div className="pointer-events-none fixed bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#08080a] via-[#08080a]/70 to-transparent" />
 
-      <main className="relative mx-auto max-w-7xl px-5 pb-10 pt-24">
+      <main className="relative mx-auto w-full max-w-7xl px-4 pb-10 pt-24 sm:px-5 sm:pt-28">
         <MotionReveal>
-          <section id="seasons" className="grid min-h-[360px] items-center gap-8 py-8 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="max-w-2xl">
-              <p className="blocky-title text-base uppercase tracking-[0.32em] text-purple-300">{currentSeason.name}</p>
-              <h1 className="blocky-title mt-4 text-4xl leading-[0.98] text-white drop-shadow-[0_0_26px_rgba(0,0,0,0.9)] sm:text-5xl lg:text-6xl">
+          <section id="seasons" className="grid min-h-[320px] items-center gap-8 py-6 sm:min-h-[360px] sm:py-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+            <div className="min-w-0 max-w-2xl">
+              <p className="blocky-title text-sm uppercase tracking-[0.22em] text-purple-300 sm:text-base sm:tracking-[0.32em]">{currentSeason.name}</p>
+              <h1 className="blocky-title mt-4 text-[clamp(2.35rem,14vw,4rem)] leading-[0.98] text-white drop-shadow-[0_0_26px_rgba(0,0,0,0.9)] sm:text-5xl lg:text-6xl">
                 50 PLAYERS.
                 <br />
                 SHRINKING WORLD.
@@ -44,10 +44,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 Track kills, deaths, points, teams, and playtime in the official Havoc SMP leaderboard.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link className="neon-hover border border-purple-300/40 bg-purple-600/80 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_0_30px_rgba(139,92,246,0.34)]" href="#leaderboard">
+                <Link className="neon-hover min-h-11 border border-purple-300/40 bg-purple-600/80 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.12em] text-white shadow-[0_0_30px_rgba(139,92,246,0.34)] sm:tracking-[0.16em]" href="#leaderboard">
                   View Leaderboard
                 </Link>
-                <Link className="neon-hover border border-purple-300/28 bg-black/42 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.16em] text-purple-50 backdrop-blur" href="/players">
+                <Link className="neon-hover min-h-11 border border-purple-300/28 bg-black/42 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.12em] text-purple-50 backdrop-blur sm:tracking-[0.16em]" href="/players">
                   View Players
                 </Link>
               </div>
@@ -71,12 +71,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </section>
         </MotionReveal>
 
-        <section id="leaderboard" className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)] lg:items-start">
+        <section id="leaderboard" className="mt-10 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)] lg:items-start">
           <MotionReveal className="contents lg:col-start-1 lg:row-start-1 lg:block lg:space-y-5">
-            <div className="order-1">
+            <div className="order-1 min-w-0">
               <SectionHeader eyebrow={season} title={`${currentSeason.name} Leaderboard`} />
             </div>
-            <div className="order-3">
+            <div className="order-3 min-w-0">
               <CompactLeaderboard players={players} />
             </div>
           </MotionReveal>
@@ -99,12 +99,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </section>
 
         <MotionReveal>
-          <section className="mt-8 overflow-hidden border border-purple-500/24 bg-black/54 p-5 shadow-[0_0_36px_rgba(139,92,246,0.14)] backdrop-blur-md sm:flex sm:items-center sm:justify-between">
-            <div>
+          <section className="mt-8 overflow-hidden border border-purple-500/24 bg-black/54 p-4 shadow-[0_0_36px_rgba(139,92,246,0.14)] backdrop-blur-md sm:flex sm:items-center sm:justify-between sm:p-5">
+            <div className="min-w-0">
               <p className="blocky-title text-2xl text-white">JOIN THE WAR ROOM</p>
               <p className="mt-1 text-sm text-purple-100/58">Squads, announcements, season updates, and killfeed drops live in Discord.</p>
             </div>
-            <Link className="neon-hover mt-4 inline-flex border border-red-300/30 bg-red-950/40 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-red-100 sm:mt-0" href="#">
+            <Link className="neon-hover mt-4 inline-flex min-h-11 w-full items-center justify-center border border-red-300/30 bg-red-950/40 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-red-100 sm:mt-0 sm:w-auto sm:tracking-[0.16em]" href="#">
               Join Discord
             </Link>
           </section>
@@ -133,11 +133,11 @@ function HeroBadge({ label }: { label: string }) {
 
 function StatusCard({ icon, label, value, detail, danger }: { icon: "users" | "calendar" | "globe" | "crown"; label: string; value: string; detail?: string; danger?: boolean }) {
   return (
-    <article className="glass-panel neon-hover p-5 hover:shadow-[0_0_46px_rgba(139,92,246,0.34)]">
+    <article className="glass-panel neon-hover min-w-0 p-4 hover:shadow-[0_0_46px_rgba(139,92,246,0.34)] sm:p-5">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-100/42">{label}</p>
-          <p className={`mt-3 text-2xl font-black ${danger ? "text-red-100" : "text-purple-100"}`}>{value}</p>
+          <p className={`mt-3 break-words text-xl font-black sm:text-2xl ${danger ? "text-red-100" : "text-purple-100"}`}>{value}</p>
           {detail ? <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-purple-100/44">{detail}</p> : null}
         </div>
         <StatusIcon name={icon} danger={danger} />
@@ -158,11 +158,11 @@ function SeasonStatusCard({
   const active = season.status === "active";
 
   return (
-    <article className="glass-panel neon-hover p-5 shadow-[0_0_34px_rgba(139,92,246,0.12)] hover:shadow-[0_0_46px_rgba(139,92,246,0.34)]">
+    <article className="glass-panel neon-hover min-w-0 p-4 shadow-[0_0_34px_rgba(139,92,246,0.12)] hover:shadow-[0_0_46px_rgba(139,92,246,0.34)] sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-100/42">Season</p>
-          <p className={`mt-3 text-2xl font-black ${active ? "text-purple-100" : "text-red-100"}`}>{label}</p>
+          <p className={`mt-3 break-words text-xl font-black sm:text-2xl ${active ? "text-purple-100" : "text-red-100"}`}>{label}</p>
           <div className="mt-3 space-y-1 text-xs font-bold uppercase tracking-[0.12em] text-purple-100/48">
             <p>{daysRemaining === null ? "Days remaining TBD" : `${daysRemaining} days remaining`}</p>
             <p>Starts {formatSeasonDate(season.startsAt)}</p>
@@ -235,7 +235,7 @@ function StatusIcon({ name, danger }: { name: "users" | "calendar" | "globe" | "
 
 function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof getPlayers>> }) {
   return (
-    <div className="glass-panel overflow-x-auto">
+    <div className="glass-panel max-w-full overflow-x-auto">
       <table className="w-full min-w-[700px] border-collapse text-sm">
         <thead className="bg-black/28 text-left text-xs uppercase tracking-[0.18em] text-purple-100/44">
           <tr>
@@ -253,7 +253,7 @@ function CompactLeaderboard({ players }: { players: Awaited<ReturnType<typeof ge
               <tr key={`${player.uuid}-${player.season}`} className="h-[82px] border-t border-purple-500/12 align-middle transition hover:bg-purple-500/[0.06]">
                 <td className="px-4 py-0 align-middle font-black text-purple-200">#{index + 1}</td>
                 <td className="px-4 py-0 align-middle">
-                  <Link className="flex h-[82px] items-center gap-[18px] font-bold text-white hover:text-purple-200" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
+                  <Link className="flex h-[82px] items-center gap-3 font-bold text-white hover:text-purple-200 sm:gap-[18px]" href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}>
                     <div className={`ranking-preview-frame ${index === 0 ? "ranking-preview-gold" : index === 1 ? "ranking-preview-silver" : index === 2 ? "ranking-preview-bronze" : ""}`}>
                       <PlayerBodyPreview player={player} size={118} className="ranking-body-preview" />
                     </div>

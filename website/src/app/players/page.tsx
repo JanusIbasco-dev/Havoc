@@ -18,10 +18,15 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
   const ranks = getRankMap(players);
 
   return (
-    <div className="space-y-8">
+    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-24 sm:px-5 sm:pt-28">
+      <div className="cinematic-overlay pointer-events-none fixed inset-0" />
+      <div className="noise-overlay pointer-events-none fixed inset-0 opacity-[0.035]" />
+      <div className="ember-field pointer-events-none fixed inset-0 opacity-20" />
+
+      <div className="relative mx-auto w-full max-w-7xl space-y-8">
       <section>
-        <p className="text-sm font-bold uppercase tracking-[0.28em] text-purple-300">{season}</p>
-        <h1 className="mt-3 text-5xl font-black text-white">Players</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-purple-300 sm:text-sm sm:tracking-[0.28em]">{season}</p>
+        <h1 className="mt-3 text-4xl font-black text-white sm:text-5xl">Players</h1>
       </section>
 
       {players.length > 0 ? (
@@ -30,9 +35,9 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
             <Link
               key={`${player.uuid}-${player.season}`}
               href={`/players/${encodeURIComponent(player.username)}?season=${encodeURIComponent(String(player.season))}`}
-              className="glass-panel neon-hover rounded-3xl p-5"
+              className="glass-panel neon-hover min-w-0 rounded-xl p-4 sm:rounded-3xl sm:p-5"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                 <div className="ranking-preview-frame">
                   <PlayerBodyPreview player={player} size={118} className="ranking-body-preview" />
                 </div>
@@ -44,7 +49,7 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
                   </div>
                 </div>
               </div>
-              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+              <div className="mt-5 grid grid-cols-2 gap-2 text-sm sm:gap-3">
                 <Stat label="Points" value={player.points} highlight />
                 <Stat label="Kills" value={player.kills} />
                 <Stat label="Deaths" value={player.deaths} danger />
@@ -56,15 +61,16 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
       ) : (
         <EmptyState />
       )}
+      </div>
     </div>
   );
 }
 
 function Stat({ label, value, highlight, danger }: { label: string; value: string | number; highlight?: boolean; danger?: boolean }) {
   return (
-    <div className="rounded-2xl border border-purple-500/12 bg-black/24 p-3">
+    <div className="min-w-0 rounded-lg border border-purple-500/12 bg-black/24 p-3 sm:rounded-2xl">
       <div className="text-xs text-purple-100/40">{label}</div>
-      <div className={`mt-1 text-lg font-black ${highlight ? "text-purple-200" : danger ? "text-rose-300" : "text-white"}`}>{value}</div>
+      <div className={`mt-1 break-words text-base font-black sm:text-lg ${highlight ? "text-purple-200" : danger ? "text-rose-300" : "text-white"}`}>{value}</div>
     </div>
   );
 }

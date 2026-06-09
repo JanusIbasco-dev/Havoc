@@ -14,14 +14,14 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="nav-underline-group flex items-center gap-5 text-sm font-black uppercase tracking-[0.18em] text-purple-100/70">
+    <nav className="nav-underline-group flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-2 text-[0.68rem] font-black uppercase tracking-[0.12em] text-purple-100/70 min-[375px]:gap-x-4 min-[375px]:text-xs sm:gap-5 sm:text-sm sm:tracking-[0.18em]">
       {navItems.map((item) => {
         const active = isActive(pathname, item.activePath);
         return (
           <Link
             key={item.label}
             className={[
-              "nav-underline-link pb-1 transition hover:text-white",
+              "nav-underline-link py-2 transition hover:text-white sm:pb-1 sm:pt-0",
               active ? "nav-underline-active text-white" : "",
               item.danger ? "nav-underline-danger" : "",
               item.hiddenOnMobile ? "hidden sm:inline-flex" : ""
