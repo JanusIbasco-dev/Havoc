@@ -23,28 +23,26 @@ export default function SeasonsPage() {
           </section>
         </MotionReveal>
 
-        <section className="mx-auto grid w-full max-w-2xl gap-4">
+        <section className="mx-auto grid w-full max-w-5xl gap-4">
           {seasons.map((season, index) => (
             <MotionReveal key={season.id} delay={index * 0.06}>
               <Link
                 href={`/seasons/${season.id}`}
-                className="glass-panel neon-hover group relative flex min-h-[500px] overflow-hidden rounded-xl border-purple-500/30 shadow-[0_0_34px_rgba(139,92,246,0.18)] hover:scale-[1.01] hover:border-purple-200/70 hover:shadow-[0_0_54px_rgba(139,92,246,0.34)] sm:min-h-[560px] sm:rounded-2xl"
+                className="glass-panel neon-hover group relative flex min-h-[150px] overflow-hidden rounded-xl border-purple-500/30 p-4 shadow-[0_0_30px_rgba(139,92,246,0.16)] hover:scale-[1.006] hover:border-purple-200/70 hover:shadow-[0_0_44px_rgba(139,92,246,0.3)] sm:min-h-[170px] sm:p-5"
               >
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-300/70 to-transparent opacity-50 transition group-hover:opacity-100" />
-                <div className="pointer-events-none absolute -left-24 top-10 h-64 w-64 rounded-full bg-purple-600/10 blur-3xl transition group-hover:bg-purple-500/16" />
-                <div className="pointer-events-none absolute -right-24 top-8 h-64 w-64 rounded-full bg-red-600/8 blur-3xl" />
-                <div className="relative flex min-w-0 flex-1 flex-col">
-                  <div className="grid min-h-[330px] place-items-center border-b border-purple-400/18 bg-black/20 px-6 py-7 sm:min-h-[390px] sm:px-8">
-                    <Image src={season.logo} alt={`${season.title} logo`} width={420} height={420} className="h-auto w-[min(78%,360px)] object-contain drop-shadow-[0_0_34px_rgba(168,85,247,0.42)] transition duration-200 group-hover:scale-[1.025]" priority={index === 0} />
-                  </div>
+                <div className="pointer-events-none absolute -left-16 top-1/2 h-44 w-44 -translate-y-1/2 rounded-full bg-purple-600/10 blur-3xl transition group-hover:bg-purple-500/16" />
+                <div className="pointer-events-none absolute -right-20 top-1/2 h-44 w-44 -translate-y-1/2 rounded-full bg-red-600/7 blur-3xl" />
+                <div className="relative flex min-w-0 flex-1 items-center gap-4 sm:gap-6">
+                  <Image src={season.logo} alt={`${season.title} logo`} width={260} height={160} className="h-auto w-[150px] shrink-0 object-contain drop-shadow-[0_0_24px_rgba(168,85,247,0.38)] transition duration-200 group-hover:scale-[1.025] sm:w-[220px]" priority={index === 0} />
 
-                  <div className="flex min-w-0 flex-1 flex-col px-5 py-5 sm:px-7 sm:py-6">
-                    <h2 className="blocky-title text-3xl leading-none text-white sm:text-4xl">{season.title}</h2>
-                    <div className="mt-2">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h2 className="blocky-title text-3xl leading-none text-white sm:text-4xl">{season.title}</h2>
                       <StatusBadge status={season.status} />
                     </div>
-                    <p className="mt-3 line-clamp-2 max-w-xl text-sm leading-6 text-purple-50/68 sm:text-base">{season.summary}</p>
-                    <span className="mt-auto inline-flex min-h-10 w-full items-center justify-center border border-purple-300/35 bg-purple-600/78 px-4 py-2.5 text-center text-xs font-black uppercase tracking-[0.12em] text-white shadow-[0_0_24px_rgba(139,92,246,0.24)] transition group-hover:border-purple-100/70 group-hover:bg-purple-500/86 sm:w-auto sm:self-start sm:text-sm sm:tracking-[0.16em]">
+                    <p className="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-purple-50/68 sm:text-base">{season.summary}</p>
+                    <span className="mt-3 inline-flex min-h-10 w-full items-center justify-center border border-purple-300/35 bg-purple-600/78 px-4 py-2.5 text-center text-xs font-black uppercase tracking-[0.12em] text-white shadow-[0_0_22px_rgba(139,92,246,0.22)] transition group-hover:border-purple-100/70 group-hover:bg-purple-500/86 sm:w-auto sm:self-start sm:text-sm sm:tracking-[0.16em]">
                       View Season
                     </span>
                   </div>
