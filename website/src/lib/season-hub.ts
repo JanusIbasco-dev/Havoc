@@ -4,6 +4,7 @@ export type SeasonHubEntry = {
   heroTitle: string;
   logo: string;
   status: "ACTIVE" | "COMING SOON" | "ENDED";
+  summary: string;
   description: string;
   championSteps: string[];
   rewardTitle: string;
@@ -17,6 +18,7 @@ export const seasons: SeasonHubEntry[] = [
     heroTitle: "HAVOC SMP SEASON 1",
     logo: "/S1logo.png",
     status: "ACTIVE",
+    summary: "Earn points through PvP battles, climb the leaderboard, and become the Season Champion before the season ends.",
     description:
       "Fight your way to the top in Havoc SMP Season 1. Earn points by eliminating other players and climb the leaderboard. Every kill rewards points while every death can set you back. Form alliances, wage wars, conquer your enemies, and survive the chaos. At the end of the season, the player with the highest points will be crowned the Season Champion and earn a permanent place in Havoc history.",
     championSteps: [
