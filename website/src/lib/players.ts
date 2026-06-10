@@ -6,6 +6,11 @@ import { resolvePlayerSkin } from "@/lib/skin-resolver";
 import type { LeaderboardPlayer, PlayerActivityEvent, PlayerHistoryEvent, PlayerProfile } from "@/types/player";
 
 const collectionName = "players";
+const hiddenPlayerUsernames = [".ppcrv", ".rhaiotMC", "KEIRU", "Roan", ".Thisismegeo", "OreBeezz"];
+
+function isHiddenPlayerUsername(username: string) {
+  return hiddenPlayerUsernames.includes(username);
+}
 
 type PlayerDocument = {
   uuid: string;
@@ -50,7 +55,7 @@ export async function getLeaderboard(season: number): Promise<LeaderboardPlayer[
     const db = await getDatabase();
     const players = await db
       .collection<PlayerDocument>(collectionName)
-      .find({ season }, { projection: { _id: 0 } })
+      .find({ season, username: { $nin: hiddenPlayerUsernames } }, { projection: { _id: 0 } })
       .sort({ points: -1, kills: -1, deaths: 1 })
       .toArray();
 
@@ -65,7 +70,7 @@ export async function getPlayer(uuid: string, season?: string | number): Promise
   try {
     const db = await getDatabase();
     const player = await db.collection<PlayerDocument>(collectionName).findOne({ uuid, season: resolveSeasonNumber(season) }, { projection: { _id: 0 } });
-    return player ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
+    return player && !isHiddenPlayerUsername(player.username) ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
   } catch {
     return null;
   }
@@ -75,7 +80,7 @@ export async function getPlayerByUsername(username: string, season?: string | nu
   try {
     const db = await getDatabase();
     const player = await db.collection<PlayerDocument>(collectionName).findOne({ username, season: resolveSeasonNumber(season) }, { projection: { _id: 0 } });
-    return player ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
+    return player && !isHiddenPlayerUsername(player.username) ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
   } catch {
     return null;
   }
@@ -92,7 +97,7 @@ export async function getPlayerByUuidOrUsername(identifier: string, season?: str
       },
       { projection: { _id: 0 } }
     );
-    return player ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
+    return player && !isHiddenPlayerUsername(player.username) ? cacheResolvedSkin(toLeaderboardPlayer(player)) : null;
   } catch {
     return null;
   }
