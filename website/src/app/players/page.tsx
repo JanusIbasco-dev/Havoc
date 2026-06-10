@@ -7,6 +7,8 @@ import { getPlayers } from "@/lib/players";
 import { getRankMap } from "@/lib/rankings";
 import { resolveSeason } from "@/lib/seasons";
 
+const hiddenPlayerUsernames = new Set([".ppcrv", ".rhaiotMC", "KEIRU", "Roan", ".Thisismegeo", "OreBeezz"]);
+
 type PlayersPageProps = {
   searchParams: Promise<{ season?: string }>;
 };
@@ -14,7 +16,7 @@ type PlayersPageProps = {
 export default async function PlayersPage({ searchParams }: PlayersPageProps) {
   const { season: seasonParam } = await searchParams;
   const season = resolveSeason(seasonParam);
-  const players = await getPlayers(season);
+  const players = (await getPlayers(season)).filter((player) => !hiddenPlayerUsernames.has(player.username));
   const ranks = getRankMap(players);
 
   return (
