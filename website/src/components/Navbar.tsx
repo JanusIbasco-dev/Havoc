@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { label: "Leaderboard", href: "/leaderboard", activePath: "/leaderboard" },
   { label: "Players", href: "/players", activePath: "/players" },
-  { label: "Seasons", href: "/#seasons", activePath: "/seasons", hiddenOnMobile: true },
+  { label: "Seasons", href: "/seasons", activePath: "/seasons", hiddenOnMobile: true },
   { label: "Rules", href: "/#rules", activePath: "/rules", hiddenOnMobile: true, danger: true }
 ];
 
