@@ -28,9 +28,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <div className="ember-field pointer-events-none fixed inset-0 opacity-24" />
       <div className="pointer-events-none fixed bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#08080a] via-[#08080a]/70 to-transparent" />
 
-      <main className="relative mx-0 w-full max-w-[390px] px-4 pb-10 pt-20 sm:px-5 md:mx-auto md:max-w-7xl md:pt-28">
+      <main className="relative mx-0 w-full max-w-[390px] px-4 pb-10 pt-[76px] sm:px-5 md:mx-auto md:max-w-7xl md:pt-28">
         <MotionReveal>
-          <section id="seasons" className="grid min-h-[auto] items-center gap-8 py-7 sm:min-h-[340px] sm:py-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <section id="seasons" className="grid min-h-[auto] items-center gap-8 py-5 sm:min-h-[340px] sm:py-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
             <div className="min-w-0 max-w-2xl bg-black/26 py-2 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-0">
               <p className="blocky-title text-xs uppercase tracking-[0.18em] text-purple-300 sm:text-base sm:tracking-[0.32em]">{currentSeason.name}</p>
               <h1 className="mobile-hero-title blocky-title mt-3 max-w-full text-[clamp(2.12rem,10.8vw,2.8rem)] leading-[0.96] text-white drop-shadow-[0_0_26px_rgba(0,0,0,0.95)] min-[390px]:text-[clamp(2.35rem,9.5vw,2.9rem)] sm:mt-4 sm:text-5xl sm:leading-[0.98] lg:text-6xl">

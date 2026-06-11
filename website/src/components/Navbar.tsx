@@ -14,7 +14,7 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="nav-underline-group hidden min-w-0 flex-1 items-center justify-end gap-5 text-sm font-black uppercase tracking-[0.18em] text-purple-100/70 md:flex">
+    <nav className="nav-underline-group hidden min-w-0 flex-1 items-center justify-end gap-5 text-sm font-black uppercase tracking-[0.18em] text-purple-100/70 lg:flex">
       {navItems.map((item) => {
         const active = isActive(pathname, item.activePath);
         return (

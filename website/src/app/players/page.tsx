@@ -18,7 +18,7 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
   const ranks = getRankMap(players);
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-20 sm:px-5 md:pt-28">
+    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-[76px] sm:px-5 md:pt-28">
       <div className="cinematic-overlay pointer-events-none fixed inset-0" />
       <div className="noise-overlay pointer-events-none fixed inset-0 opacity-[0.035]" />
       <div className="ember-field pointer-events-none fixed inset-0 opacity-20" />
