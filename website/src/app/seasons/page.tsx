@@ -5,7 +5,7 @@ import { seasons } from "@/lib/season-hub";
 
 export default function SeasonsPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-24 sm:px-5 sm:pt-28">
+    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-20 sm:px-5 md:pt-28">
       <div className="cinematic-overlay pointer-events-none fixed inset-0" />
       <div className="noise-overlay pointer-events-none fixed inset-0 opacity-[0.035]" />
       <div className="ember-field pointer-events-none fixed inset-0 opacity-20" />
@@ -15,7 +15,7 @@ export default function SeasonsPage() {
         <MotionReveal>
           <section className="max-w-3xl py-4">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-purple-300 sm:text-sm sm:tracking-[0.28em]">SEASONS</p>
-            <h1 className="blocky-title mt-3 text-[clamp(2.5rem,13vw,5rem)] leading-none text-white">
+            <h1 className="blocky-title mt-3 text-[clamp(2.4rem,11vw,3.65rem)] leading-[0.95] text-white md:text-[clamp(3.5rem,8vw,5rem)]">
               Compete. Dominate.
               <br />
               Become Champion.
@@ -33,8 +33,8 @@ export default function SeasonsPage() {
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-300/70 to-transparent opacity-50 transition group-hover:opacity-100" />
                 <div className="pointer-events-none absolute -left-16 top-1/2 h-44 w-44 -translate-y-1/2 rounded-full bg-purple-600/10 blur-3xl transition group-hover:bg-purple-500/16" />
                 <div className="pointer-events-none absolute -right-20 top-1/2 h-44 w-44 -translate-y-1/2 rounded-full bg-red-600/7 blur-3xl" />
-                <div className="relative flex min-w-0 flex-1 items-center gap-4 sm:gap-6">
-                  <Image src={season.logo} alt={`${season.title} logo`} width={260} height={160} className="h-auto w-[150px] shrink-0 object-contain drop-shadow-[0_0_24px_rgba(168,85,247,0.38)] transition duration-200 group-hover:scale-[1.025] sm:w-[220px]" priority={index === 0} />
+                <div className="relative flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                  <Image src={season.logo} alt={`${season.title} logo`} width={260} height={160} className="h-auto w-[132px] shrink-0 self-center object-contain drop-shadow-[0_0_24px_rgba(168,85,247,0.38)] transition duration-200 group-hover:scale-[1.025] sm:w-[220px] sm:self-auto" priority={index === 0} />
 
                   <div className="flex min-w-0 flex-1 flex-col justify-center">
                     <div className="flex flex-wrap items-center gap-3">

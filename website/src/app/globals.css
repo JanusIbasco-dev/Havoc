@@ -153,6 +153,21 @@ a {
   transform: translateX(-50%) scaleX(0);
 }
 
+.mobile-header-nav {
+  position: fixed;
+  top: 9px;
+  left: 86px;
+  z-index: 70;
+  width: min(250px, calc(100vw - 102px));
+  display: grid;
+}
+
+@media (min-width: 768px) {
+  .mobile-header-nav {
+    display: none !important;
+  }
+}
+
 .profile-head-avatar {
   width: 96px;
   height: 96px;
@@ -386,7 +401,27 @@ a {
 
 @media (max-width: 640px) {
   body {
+    background:
+      linear-gradient(90deg, rgba(8, 8, 10, 0.9) 0%, rgba(8, 8, 10, 0.86) 52%, rgba(8, 8, 10, 0.78) 100%),
+      linear-gradient(180deg, rgba(8, 8, 10, 0.78) 0%, rgba(8, 8, 10, 0.9) 100%),
+      radial-gradient(circle at 18% 18%, rgba(139, 92, 246, 0.18), transparent 34%),
+      radial-gradient(circle at 88% 26%, rgba(185, 28, 28, 0.1), transparent 32%),
+      url("/BG.png"),
+      var(--background);
     background-attachment: scroll;
+    background-position: center top;
+    background-size: auto, auto, auto, auto, cover, auto;
+  }
+
+  .cinematic-overlay {
+    background:
+      linear-gradient(90deg, rgba(8, 8, 10, 0.72), rgba(8, 8, 10, 0.5)),
+      radial-gradient(circle at 24% 16%, rgba(139, 92, 246, 0.16), transparent 36%),
+      linear-gradient(180deg, rgba(8, 8, 10, 0.12), rgba(8, 8, 10, 0.42));
+  }
+
+  .ember-field {
+    opacity: 0.12;
   }
 
   .profile-head-avatar {
@@ -428,5 +463,44 @@ a {
   .top-rank-body-preview {
     width: 82px;
     height: 112px;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 767px) {
+  .mobile-header-nav {
+    left: 80px;
+    width: min(240px, calc(100vw - 96px));
+  }
+
+  .glass-panel {
+    background: linear-gradient(145deg, rgba(12, 12, 18, 0.88), rgba(5, 5, 8, 0.92));
+  }
+}
+
+@media (max-width: 374px) {
+  .mobile-header-nav {
+    left: 76px;
+    width: calc(100vw - 88px);
+    column-gap: 6px;
+    font-size: 0.56rem;
+    letter-spacing: 0.03em;
+  }
+
+  .mobile-hero-title {
+    font-size: clamp(1.95rem, 10vw, 2.22rem);
+    line-height: 0.98;
+  }
+
+  .mobile-hero-button {
+    min-height: 46px;
+    padding-inline: 12px;
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+  }
+
+  .mobile-hero-badge {
+    padding-inline: 8px;
+    font-size: 0.58rem;
+    letter-spacing: 0.05em;
   }
 }

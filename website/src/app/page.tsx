@@ -28,30 +28,35 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <div className="ember-field pointer-events-none fixed inset-0 opacity-24" />
       <div className="pointer-events-none fixed bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#08080a] via-[#08080a]/70 to-transparent" />
 
-      <main className="relative mx-auto w-full max-w-7xl px-4 pb-10 pt-24 sm:px-5 sm:pt-28">
+      <main className="relative mx-0 w-full max-w-[390px] px-4 pb-10 pt-20 sm:px-5 md:mx-auto md:max-w-7xl md:pt-28">
         <MotionReveal>
-          <section id="seasons" className="grid min-h-[320px] items-center gap-8 py-6 sm:min-h-[360px] sm:py-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
-            <div className="min-w-0 max-w-2xl">
-              <p className="blocky-title text-sm uppercase tracking-[0.22em] text-purple-300 sm:text-base sm:tracking-[0.32em]">{currentSeason.name}</p>
-              <h1 className="blocky-title mt-4 text-[clamp(2.35rem,14vw,4rem)] leading-[0.98] text-white drop-shadow-[0_0_26px_rgba(0,0,0,0.9)] sm:text-5xl lg:text-6xl">
+          <section id="seasons" className="grid min-h-[auto] items-center gap-8 py-7 sm:min-h-[340px] sm:py-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+            <div className="min-w-0 max-w-2xl bg-black/26 py-2 backdrop-blur-[1px] sm:bg-transparent sm:backdrop-blur-0">
+              <p className="blocky-title text-xs uppercase tracking-[0.18em] text-purple-300 sm:text-base sm:tracking-[0.32em]">{currentSeason.name}</p>
+              <h1 className="mobile-hero-title blocky-title mt-3 max-w-full text-[clamp(2.12rem,10.8vw,2.8rem)] leading-[0.96] text-white drop-shadow-[0_0_26px_rgba(0,0,0,0.95)] min-[390px]:text-[clamp(2.35rem,9.5vw,2.9rem)] sm:mt-4 sm:text-5xl sm:leading-[0.98] lg:text-6xl">
                 50 PLAYERS.
                 <br />
-                SHRINKING WORLD.
+                <span className="sm:hidden">
+                  SHRINKING
+                  <br />
+                  WORLD.
+                </span>
+                <span className="hidden sm:inline">SHRINKING WORLD.</span>
                 <br />
                 ONE CHAMPION.
               </h1>
-              <p className="mt-5 max-w-xl text-base leading-7 text-purple-50/70">
+              <p className="mt-4 max-w-xl text-sm leading-6 text-purple-50/82 sm:mt-5 sm:text-base sm:leading-7 sm:text-purple-50/70">
                 Track kills, deaths, points, teams, and playtime in the official Havoc SMP leaderboard.
               </p>
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link className="neon-hover min-h-11 border border-purple-300/40 bg-purple-600/80 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.12em] text-white shadow-[0_0_30px_rgba(139,92,246,0.34)] sm:tracking-[0.16em]" href="#leaderboard">
+              <div className="mt-6 grid gap-3 sm:mt-7 sm:flex sm:flex-row">
+                <Link className="mobile-hero-button neon-hover flex min-h-12 w-full items-center justify-center border border-purple-300/40 bg-purple-600/84 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.1em] text-white shadow-[0_0_30px_rgba(139,92,246,0.34)] sm:w-auto sm:tracking-[0.16em]" href="#leaderboard">
                   View Leaderboard
                 </Link>
-                <Link className="neon-hover min-h-11 border border-purple-300/28 bg-black/42 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.12em] text-purple-50 backdrop-blur sm:tracking-[0.16em]" href="/players">
+                <Link className="mobile-hero-button neon-hover flex min-h-12 w-full items-center justify-center border border-purple-300/28 bg-black/58 px-5 py-3 text-center text-sm font-black uppercase tracking-[0.1em] text-purple-50 backdrop-blur sm:w-auto sm:tracking-[0.16em]" href="/players">
                   View Players
                 </Link>
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 grid grid-cols-2 gap-2 min-[430px]:flex min-[430px]:flex-wrap">
                 <HeroBadge label="50 Slots" />
                 <HeroBadge label="Teams Enabled" />
                 <HeroBadge label={currentSeason.name} />
@@ -63,7 +68,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </MotionReveal>
 
         <MotionReveal>
-          <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <section className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             <StatusCard icon="users" label="Players" value={`${players.length} / 50`} />
             <SeasonStatusCard season={currentSeason} label={seasonLabel} daysRemaining={daysRemaining} />
             <StatusCard icon="globe" label="World Border" value={`${currentSeason.worldBorderSize.toLocaleString()} blocks`} detail={currentSeason.worldBorderStatus} />
@@ -118,14 +123,14 @@ function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div>
       <p className="text-xs font-black uppercase tracking-[0.26em] text-red-300/72">{eyebrow}</p>
-      <h2 className="blocky-title mt-1 text-2xl text-white">{title}</h2>
+      <h2 className="blocky-title mt-1 text-[1.7rem] leading-none text-white sm:text-2xl">{title}</h2>
     </div>
   );
 }
 
 function HeroBadge({ label }: { label: string }) {
   return (
-    <span className="border border-purple-400/22 bg-black/38 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-purple-100/72 shadow-[0_0_20px_rgba(139,92,246,0.14)] backdrop-blur">
+    <span className="mobile-hero-badge min-w-0 border border-purple-400/22 bg-black/50 px-3 py-2 text-center text-[0.68rem] font-black uppercase leading-tight tracking-[0.1em] text-purple-100/82 shadow-[0_0_20px_rgba(139,92,246,0.14)] backdrop-blur sm:bg-black/38 sm:py-1.5 sm:text-xs sm:tracking-[0.14em] sm:text-purple-100/72">
       {label}
     </span>
   );
@@ -133,12 +138,12 @@ function HeroBadge({ label }: { label: string }) {
 
 function StatusCard({ icon, label, value, detail, danger }: { icon: "users" | "calendar" | "globe" | "crown"; label: string; value: string; detail?: string; danger?: boolean }) {
   return (
-    <article className="glass-panel neon-hover min-w-0 p-4 hover:shadow-[0_0_46px_rgba(139,92,246,0.34)] sm:p-5">
+    <article className="glass-panel neon-hover min-w-0 p-4 hover:shadow-[0_0_46px_rgba(139,92,246,0.34)] md:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-100/42">{label}</p>
-          <p className={`mt-3 break-words text-xl font-black sm:text-2xl ${danger ? "text-red-100" : "text-purple-100"}`}>{value}</p>
-          {detail ? <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-purple-100/44">{detail}</p> : null}
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-purple-100/50 sm:tracking-[0.2em] sm:text-purple-100/42">{label}</p>
+          <p className={`mt-2 break-words text-xl font-black md:mt-3 md:text-2xl ${danger ? "text-red-100" : "text-purple-100"}`}>{value}</p>
+          {detail ? <p className="mt-1 text-xs font-bold uppercase leading-5 tracking-[0.08em] text-purple-100/50 sm:tracking-[0.12em] sm:text-purple-100/44">{detail}</p> : null}
         </div>
         <StatusIcon name={icon} danger={danger} />
       </div>
@@ -158,12 +163,12 @@ function SeasonStatusCard({
   const active = season.status === "active";
 
   return (
-    <article className="glass-panel neon-hover min-w-0 p-4 shadow-[0_0_34px_rgba(139,92,246,0.12)] hover:shadow-[0_0_46px_rgba(139,92,246,0.34)] sm:p-5">
+    <article className="glass-panel neon-hover min-w-0 p-4 shadow-[0_0_34px_rgba(139,92,246,0.12)] hover:shadow-[0_0_46px_rgba(139,92,246,0.34)] md:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-purple-100/42">Season</p>
-          <p className={`mt-3 break-words text-xl font-black sm:text-2xl ${active ? "text-purple-100" : "text-red-100"}`}>{label}</p>
-          <div className="mt-3 space-y-1 text-xs font-bold uppercase tracking-[0.12em] text-purple-100/48">
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-purple-100/50 sm:tracking-[0.2em] sm:text-purple-100/42">Season</p>
+          <p className={`mt-2 break-words text-xl font-black md:mt-3 md:text-2xl ${active ? "text-purple-100" : "text-red-100"}`}>{label}</p>
+          <div className="mt-2 space-y-1 text-xs font-bold uppercase leading-5 tracking-[0.06em] text-purple-100/56 md:mt-3 md:tracking-[0.12em] md:text-purple-100/48">
             <p>{daysRemaining === null ? "Days remaining TBD" : `${daysRemaining} days remaining`}</p>
             <p>Starts {formatSeasonDate(season.startsAt)}</p>
             <p>Ends {formatSeasonDate(season.endsAt)}</p>
@@ -225,8 +230,8 @@ function StatusIcon({ name, danger }: { name: "users" | "calendar" | "globe" | "
   };
 
   return (
-    <div className={`grid h-11 w-11 place-items-center border border-current/20 bg-black/24 ${stroke}`}>
-      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <div className={`grid h-10 w-10 shrink-0 place-items-center border border-current/20 bg-black/24 sm:h-11 sm:w-11 ${stroke}`}>
+      <svg viewBox="0 0 24 24" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         {paths[name]}
       </svg>
     </div>

@@ -18,7 +18,7 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
   const ranks = getRankMap(players);
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-24 sm:px-5 sm:pt-28">
+    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-20 sm:px-5 md:pt-28">
       <div className="cinematic-overlay pointer-events-none fixed inset-0" />
       <div className="noise-overlay pointer-events-none fixed inset-0 opacity-[0.035]" />
       <div className="ember-field pointer-events-none fixed inset-0 opacity-20" />
@@ -26,7 +26,7 @@ export default async function PlayersPage({ searchParams }: PlayersPageProps) {
       <div className="relative mx-auto w-full max-w-7xl space-y-8">
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-purple-300 sm:text-sm sm:tracking-[0.28em]">{season}</p>
-        <h1 className="mt-3 text-4xl font-black text-white sm:text-5xl">Players</h1>
+        <h1 className="mt-3 text-4xl font-black leading-none text-white sm:text-5xl">Players</h1>
       </section>
 
       {players.length > 0 ? (

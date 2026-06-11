@@ -21,7 +21,7 @@ export default async function SeasonDetailsPage({ params }: SeasonDetailsPagePro
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-24 sm:px-5 sm:pt-28">
+    <div className="relative min-h-screen overflow-hidden px-4 pb-12 pt-20 sm:px-5 md:pt-28">
       <div className="cinematic-overlay pointer-events-none fixed inset-0" />
       <div className="noise-overlay pointer-events-none fixed inset-0 opacity-[0.035]" />
       <div className="ember-field pointer-events-none fixed inset-0 opacity-20" />
@@ -36,15 +36,15 @@ export default async function SeasonDetailsPage({ params }: SeasonDetailsPagePro
 
         <MotionReveal>
           <section className="grid items-center gap-7 py-3 lg:grid-cols-[auto_minmax(0,1fr)]">
-            <div className="grid h-40 w-40 place-items-center rounded-3xl border border-purple-300/18 bg-black/38 shadow-[0_0_54px_rgba(139,92,246,0.24)] sm:h-52 sm:w-52">
-              <Image src={season.logo} alt={`${season.title} logo`} width={208} height={208} className="h-32 w-32 object-contain drop-shadow-[0_0_24px_rgba(168,85,247,0.38)] sm:h-44 sm:w-44" priority />
+            <div className="grid h-32 w-32 place-items-center rounded-2xl border border-purple-300/18 bg-black/42 shadow-[0_0_54px_rgba(139,92,246,0.24)] sm:h-52 sm:w-52 sm:rounded-3xl">
+              <Image src={season.logo} alt={`${season.title} logo`} width={208} height={208} className="h-24 w-24 object-contain drop-shadow-[0_0_24px_rgba(168,85,247,0.38)] sm:h-44 sm:w-44" priority />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="blocky-title text-[clamp(2.35rem,12vw,5.5rem)] leading-none text-white">{season.heroTitle}</h1>
+                <h1 className="blocky-title text-[clamp(2.35rem,11vw,3.65rem)] leading-[0.95] text-white md:text-[clamp(3.75rem,8vw,5.5rem)]">{season.heroTitle}</h1>
                 <StatusBadge status={season.status} />
               </div>
-              <p className="mt-5 max-w-4xl text-base leading-7 text-purple-50/72 sm:text-lg sm:leading-8">{season.description}</p>
+              <p className="mt-4 max-w-4xl text-sm leading-6 text-purple-50/82 sm:mt-5 sm:text-lg sm:leading-8 sm:text-purple-50/72">{season.description}</p>
             </div>
           </section>
         </MotionReveal>

@@ -6,7 +6,28 @@ import { resolvePlayerSkin } from "@/lib/skin-resolver";
 import type { LeaderboardPlayer, PlayerActivityEvent, PlayerHistoryEvent, PlayerProfile } from "@/types/player";
 
 const collectionName = "players";
-const hiddenPlayerUsernames = [".ppcrv", ".rhaiotMC", "KEIRU", "Roan", ".Thisismegeo", "OreBeezz"];
+const hiddenPlayerUsernames = [
+  ".ppcrv",
+  ".rhaiotMC",
+  "KEIRU",
+  "Roan",
+  ".Thisismegeo",
+  "OreBeezz",
+  "pinoy",
+  "GOODG4amer",
+  ".tordehhh",
+  "Not_Hinata",
+  "aven686",
+  ".firewolf1200",
+  ".crownfog2202",
+  ".Inkkel",
+  "ShadowJake",
+  "xDane_",
+  "Khyrooo",
+  "rhaiotMC",
+  "BOCSZ",
+  ".Ensaymada695287"
+];
 
 function isHiddenPlayerUsername(username: string) {
   return hiddenPlayerUsernames.includes(username);
