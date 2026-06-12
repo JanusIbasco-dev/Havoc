@@ -9,14 +9,14 @@ type SeasonDetailsPageProps = {
 };
 
 export function generateStaticParams() {
-  return seasons.map((season) => ({ seasonId: season.id }));
+  return seasons.filter((season) => season.status !== "COMING SOON").map((season) => ({ seasonId: season.id }));
 }
 
 export default async function SeasonDetailsPage({ params }: SeasonDetailsPageProps) {
   const { seasonId } = await params;
   const season = getSeasonById(seasonId);
 
-  if (!season) {
+  if (!season || season.status === "COMING SOON") {
     notFound();
   }
 
