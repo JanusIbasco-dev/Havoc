@@ -36,7 +36,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   <Link className="block w-full px-1 py-3 transition hover:text-white" href="/leaderboard">Leaderboard</Link>
                   <Link className="block w-full px-1 py-3 transition hover:text-white" href="/players">Players</Link>
                   <Link className="block w-full px-1 py-3 transition hover:text-white" href="/seasons">Seasons</Link>
-                  <Link className="block w-full px-1 py-3 text-red-200 transition hover:text-white" href="/#rules">Rules</Link>
                 </nav>
               </div>
             </details>

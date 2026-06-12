@@ -6,8 +6,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { label: "Leaderboard", href: "/leaderboard", activePath: "/leaderboard" },
   { label: "Players", href: "/players", activePath: "/players" },
-  { label: "Seasons", href: "/seasons", activePath: "/seasons" },
-  { label: "Rules", href: "/#rules", activePath: "/rules", danger: true }
+  { label: "Seasons", href: "/seasons", activePath: "/seasons" }
 ];
 
 export function Navbar() {
@@ -22,8 +21,7 @@ export function Navbar() {
             key={item.label}
             className={[
               "nav-underline-link pb-1 transition hover:text-white",
-              active ? "nav-underline-active text-white" : "",
-              item.danger ? "nav-underline-danger" : ""
+              active ? "nav-underline-active text-white" : ""
             ]
               .filter(Boolean)
               .join(" ")}
