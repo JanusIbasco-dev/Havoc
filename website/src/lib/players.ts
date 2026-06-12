@@ -26,7 +26,14 @@ const hiddenPlayerUsernames = [
   "Khyrooo",
   "rhaiotMC",
   "BOCSZ",
-  ".Ensaymada695287"
+  ".Ensaymada695287",
+  "potric11",
+  ".mikeclaro6718",
+  "Megastreak_",
+  "megastreak_",
+  "MegaStreak_",
+  ".FeedAgenda4579",
+  ".XDjamesPlayz780"
 ];
 
 function isHiddenPlayerUsername(username: string) {
